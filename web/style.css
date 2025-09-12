@@ -1,0 +1,17 @@
+:root{
+  --bg:#0b0c0f; --fg:#e7e9ee; --card:#141720; --muted:#9aa3b2; --border:#212633; --accent:#5aa7ff;
+}
+@media (prefers-color-scheme: light){
+  :root{ --bg:#f7f8fb; --fg:#0b0c0f; --card:#ffffff; --muted:#5b6472; --border:#e6e8ee; --accent:#2b6cff; }
+}
+*{box-sizing:border-box}
+body{margin:0; font-family:system-ui, Segoe UI, Roboto, Arial, sans-serif; background:var(--bg); color:var(--fg);}
+header{padding:24px 24px 0} h1{margin:0 0 4px} p{margin:0; color:var(--muted)}
+.grid{display:grid; gap:16px; padding:24px; grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.card{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px; box-shadow:0 4px 12px rgb(0 0 0 / 8%)}
+label{display:block; font-size:14px; color:var(--muted); margin-bottom:4px}
+input, select{width:100%; padding:8px 10px; border-radius:8px; border:1px solid var(--border); background:transparent; color:var(--fg)}
+.row{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:12px 0}
+.price{font-size:20px; margin:8px 0 12px}
+.greeks{display:grid; grid-template-columns:repeat(2,1fr); gap:6px}
+.greeks div{padding:8px; border:1px solid var(--border); border-radius:8px}
