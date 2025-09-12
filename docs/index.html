@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Black–Scholes C++ Calculator</title>
+  <title>Black–Scholes (C++ → WebAssembly)</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -13,60 +13,78 @@
   </header>
 
   <main class="grid">
+    <!-- Inputs -->
     <section class="card">
       <h2>Inputs</h2>
 
-      <label>Type
-        <select id="type">
-          <option value="Call" selected>Call</option>
-          <option value="Put">Put</option>
-        </select>
-      </label>
-
       <div class="row">
-        <label>S (spot) <input id="S_num" type="number" value="100" step="0.01"></label>
+        <label>S (spot)
+          <input id="S_num" type="number" value="100" step="0.01">
+        </label>
         <input id="S_rng" type="range" min="1" max="1000" value="100" step="1">
       </div>
 
       <div class="row">
-        <label>K (strike) <input id="K_num" type="number" value="100" step="0.01"></label>
+        <label>K (strike)
+          <input id="K_num" type="number" value="100" step="0.01">
+        </label>
         <input id="K_rng" type="range" min="1" max="1000" value="100" step="1">
       </div>
 
       <div class="row">
-        <label>r (interest) <input id="r_num" type="number" value="0.05" step="0.0001"></label>
+        <label>r (interest, decimal)
+          <input id="r_num" type="number" value="0.05" step="0.0001">
+        </label>
         <input id="r_rng" type="range" min="-0.05" max="0.15" value="0.05" step="0.0001">
       </div>
 
       <div class="row">
-        <label>q (dividend rate) <input id="q_num" type="number" value="0.00" step="0.0001"></label>
+        <label>q (dividend rate, decimal)
+          <input id="q_num" type="number" value="0.00" step="0.0001">
+        </label>
         <input id="q_rng" type="range" min="0.00" max="0.10" value="0.00" step="0.0001">
       </div>
 
       <div class="row">
-        <label>sigma (volatility) <input id="sigma_num" type="number" value="0.20" step="0.0001"></label>
+        <label>σ (volatility, decimal)
+          <input id="sigma_num" type="number" value="0.20" step="0.0001">
+        </label>
         <input id="sigma_rng" type="range" min="0.01" max="2.00" value="0.20" step="0.0001">
       </div>
 
       <div class="row">
-        <label>T (years to maturity) <input id="T_num" type="number" value="1" step="0.01"></label>
+        <label>T (years to maturity)
+          <input id="T_num" type="number" value="1" step="0.01">
+        </label>
         <input id="T_rng" type="range" min="0.01" max="10.00" value="1" step="0.01">
       </div>
     </section>
 
+    <!-- Outputs -->
     <section class="card">
       <h2>Outputs</h2>
-      <div class="price">Price: <strong id="price">—</strong></div>
-      <div class="greeks">
-        <div>Delta <span id="delta">—</span></div>
-        <div>Gamma <span id="gamma">—</span></div>
-        <div>Vega <span id="vega">—</span></div>
-        <div>Theta <span id="theta">—</span></div>
-        <div>Rho <span id="rho">—</span></div>
-      </div>
+      <table class="outputs">
+        <thead>
+          <tr>
+            <th></th>
+            <th>European Call</th>
+            <th>European Put</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Price</td><td id="call_price">Loading…</td><td id="put_price">Loading…</td></tr>
+          <tr><td>Delta</td><td id="call_delta">—</td><td id="put_delta">—</td></tr>
+          <tr><td>Gamma</td><td id="call_gamma">—</td><td id="put_gamma">—</td></tr>
+          <tr><td>Vega</td><td id="call_vega">—</td><td id="put_vega">—</td></tr>
+          <tr><td>Theta</td><td id="call_theta">—</td><td id="put_theta">—</td></tr>
+          <tr><td>Rho</td><td id="call_rho">—</td><td id="put_rho">—</td></tr>
+        </tbody>
+      </table>
     </section>
   </main>
-  <script src="options.js"></script>   
-  <script src="app.js"></script>  
+
+  <!-- load emscripten loader first (creates global createModule) -->
+  <script src="options.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
