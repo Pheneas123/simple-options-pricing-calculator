@@ -5,8 +5,7 @@ function $(id){ return document.getElementById(id); }
 function to6(x){ return Number.isFinite(x) ? x.toFixed(6) : "—"; }
 
 async function loadWasm(){
-  // options.js was loaded by a <script> tag; it defines createModule(...)
-  Module = await createModule();   // <-- this comes from options.js
+  Module = await createModule();
 }
 
 function syncPair(numId, rngId, min, max, step){
