@@ -13,7 +13,6 @@
   </header>
 
   <main class="grid">
-    <!-- Inputs -->
     <section class="card">
       <h2>Inputs</h2>
 
@@ -61,29 +60,79 @@
     </section>
 
     <!-- Outputs -->
-    <section class="card">
-      <h2>Outputs</h2>
-      <table class="outputs">
-        <thead>
-          <tr>
-            <th></th>
-            <th>European Call</th>
-            <th>European Put</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>Price</td><td id="call_price">Loading…</td><td id="put_price">Loading…</td></tr>
-          <tr><td>Delta</td><td id="call_delta">—</td><td id="put_delta">—</td></tr>
-          <tr><td>Gamma</td><td id="call_gamma">—</td><td id="put_gamma">—</td></tr>
-          <tr><td>Vega</td><td id="call_vega">—</td><td id="put_vega">—</td></tr>
-          <tr><td>Theta</td><td id="call_theta">—</td><td id="put_theta">—</td></tr>
-          <tr><td>Rho</td><td id="call_rho">—</td><td id="put_rho">—</td></tr>
-        </tbody>
-      </table>
-    </section>
-  </main>
-
-  <!-- load emscripten loader first (creates global createModule) -->
+<section class="card">
+  <h2>Outputs</h2>
+  <table class="outputs">
+    <thead>
+      <tr>
+        <th></th>
+        <th>European Call</th>
+        <th>European Put</th>
+        <th>Binary Call</th>
+        <th>Binary Put</th>
+        <th>American Call</th>
+        <th>American Put</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Price</td>
+        <td id="call_price">Loading…</td>
+        <td id="put_price">Loading…</td>
+        <td id="binC_price">—</td>
+        <td id="binP_price">—</td>
+        <td id="amC_price">—</td>
+        <td id="amP_price">—</td>
+      </tr>
+      <tr>
+        <td>Delta</td>
+        <td id="call_delta">—</td>
+        <td id="put_delta">—</td>
+        <td id="binC_delta">—</td>
+        <td id="binP_delta">—</td>
+        <td id="amC_delta">—</td>
+        <td id="amP_delta">—</td>
+      </tr>
+      <tr>
+        <td>Gamma</td>
+        <td id="call_gamma">—</td>
+        <td id="put_gamma">—</td>
+        <td id="binC_gamma">—</td>
+        <td id="binP_gamma">—</td>
+        <td id="amC_gamma">—</td>
+        <td id="amP_gamma">—</td>
+      </tr>
+      <tr>
+        <td>Vega</td>
+        <td id="call_vega">—</td>
+        <td id="put_vega">—</td>
+        <td id="binC_vega">—</td>
+        <td id="binP_vega">—</td>
+        <td id="amC_vega">—</td>
+        <td id="amP_vega">—</td>
+      </tr>
+      <tr>
+        <td>Theta</td>
+        <td id="call_theta">—</td>
+        <td id="put_theta">—</td>
+        <td id="binC_theta">—</td>
+        <td id="binP_theta">—</td>
+        <td id="amC_theta">—</td>
+        <td id="amP_theta">—</td>
+      </tr>
+      <tr>
+        <td>Rho</td>
+        <td id="call_rho">—</td>
+        <td id="put_rho">—</td>
+        <td id="binC_rho">—</td>
+        <td id="binP_rho">—</td>
+        <td id="amC_rho">—</td>
+        <td id="amP_rho">—</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+</main>
   <script src="options.js"></script>
   <script src="app.js"></script>
 </body>

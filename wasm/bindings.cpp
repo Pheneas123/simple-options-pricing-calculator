@@ -1,4 +1,4 @@
-#include "bs.hpp" // comes from src/, via CMake include dirs
+#include "bs.hpp"
 #include <emscripten/bind.h>
 
 using namespace emscripten;
@@ -17,4 +17,7 @@ EMSCRIPTEN_BINDINGS(bs_module) {
       .field("rho", &bs::Result::rho);
 
   function("black_scholes", &bs::blackScholes);
+
+  function("binary_cash_or_nothing", &bs::binaryCashOrNothing);
+  function("american_option", &bs::americanOption);
 }

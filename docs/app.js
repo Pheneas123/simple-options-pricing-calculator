@@ -1,12 +1,22 @@
-
+// docs/app.js
 let Module = null; // Emscripten module instance
 const READY = { wasm: false }; // track readiness
 
 function $(id){ return document.getElementById(id); }
 function to6(x){ return Number.isFinite(x) ? x.toFixed(6) : "—"; }
+
 function setErr(msg){
-  // surface any load/compute errors in the table
-  const ids = ["call_price","put_price","call_delta","put_delta","call_gamma","put_gamma","call_vega","put_vega","call_theta","put_theta","call_rho","put_rho"];
+  // European
+  const ids = [
+    "call_price","put_price","call_delta","put_delta","call_gamma","put_gamma",
+    "call_vega","put_vega","call_theta","put_theta","call_rho","put_rho",
+    // Binary
+    "binC_price","binP_price","binC_delta","binP_delta","binC_gamma","binP_gamma",
+    "binC_vega","binP_vega","binC_theta","binP_theta","binC_rho","binP_rho",
+    // American
+    "amC_price","amP_price","amC_delta","amP_delta","amC_gamma","amP_gamma",
+    "amC_vega","amP_vega","amC_theta","amP_theta","amC_rho","amP_rho",
+  ];
   ids.forEach(i => { const el = $(i); if (el) el.textContent = msg; });
 }
 
@@ -48,7 +58,7 @@ function readState(){
   };
 }
 
-function renderPair(prefix, res){
+function render(prefix, res){
   $(`${prefix}_price`).textContent = to6(res.price);
   $(`${prefix}_delta`).textContent = to6(res.delta);
   $(`${prefix}_gamma`).textContent = to6(res.gamma);
@@ -68,10 +78,27 @@ function compute(){
     if (!(s.S>0 && s.K>0 && s.sigma>0 && s.T>0)) return;
 
     try {
+      // European (existing)
       const callRes = Module.black_scholes(Module.Type.Call, s.S, s.K, s.r, s.q, s.sigma, s.T);
       const putRes  = Module.black_scholes(Module.Type.Put,  s.S, s.K, s.r, s.q, s.sigma, s.T);
-      renderPair('call', callRes);
-      renderPair('put',  putRes);
+      render('call', callRes);
+      render('put',  putRes);
+
+
+      // Binary cash-or-nothing (payout fixed at 1.0 here)
+      const payout = 1.0;
+      const binC = Module.binary_cash_or_nothing(Module.Type.Call, s.S, s.K, s.r, s.q, s.sigma, s.T, payout);
+      const binP = Module.binary_cash_or_nothing(Module.Type.Put,  s.S, s.K, s.r, s.q, s.sigma, s.T, payout);
+      render('binC', binC);
+      render('binP', binP);
+
+      // American (CRR). Steps fixed here; add a slider later if you want.
+      const steps = 300;
+      const amC = Module.american_option(Module.Type.Call, s.S, s.K, s.r, s.q, s.sigma, s.T, steps);
+      const amP = Module.american_option(Module.Type.Put,  s.S, s.K, s.r, s.q, s.sigma, s.T, steps);
+      render('amC', amC);
+      render('amP', amP);
+
     } catch (e) {
       console.error(e);
       setErr("Compute error (see console)");

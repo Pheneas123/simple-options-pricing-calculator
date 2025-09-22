@@ -14,10 +14,19 @@ struct Result {
   double rho;
 };
 
+// Black–Scholes European
 Result blackScholes(Type type, double S, double K, double r, double q,
                     double sigma, double T);
 
 double normPdf(double x);
 double normCdf(double x);
+
+// Binary (cash-or-nothing)
+Result binaryCashOrNothing(Type type, double S, double K, double r, double q,
+                           double sigma, double T, double payout = 1.0);
+
+// American options
+Result americanOption(Type type, double S, double K, double r, double q,
+                      double sigma, double T, int steps = 200);
 
 } // namespace bs
