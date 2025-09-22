@@ -69,7 +69,6 @@ function render(prefix, res){
 
 let timer;
 function compute(){
-  // Bindings not ready yet: just skip until loadWasm resolves.
   if (!READY.wasm || !Module || !Module.black_scholes) return;
 
   clearTimeout(timer);
@@ -78,7 +77,7 @@ function compute(){
     if (!(s.S>0 && s.K>0 && s.sigma>0 && s.T>0)) return;
 
     try {
-      // European (existing)
+      // European 
       const callRes = Module.black_scholes(Module.Type.Call, s.S, s.K, s.r, s.q, s.sigma, s.T);
       const putRes  = Module.black_scholes(Module.Type.Put,  s.S, s.K, s.r, s.q, s.sigma, s.T);
       render('call', callRes);
@@ -92,7 +91,7 @@ function compute(){
       render('binC', binC);
       render('binP', binP);
 
-      // American (CRR). Steps fixed here; add a slider later if you want.
+      // American (CRR)
       const steps = 300;
       const amC = Module.american_option(Module.Type.Call, s.S, s.K, s.r, s.q, s.sigma, s.T, steps);
       const amP = Module.american_option(Module.Type.Put,  s.S, s.K, s.r, s.q, s.sigma, s.T, steps);
@@ -111,14 +110,12 @@ function compute(){
   $('call_price').textContent = 'Loading…';
   $('put_price').textContent  = 'Loading…';
 
-  // Wire inputs immediately (so sliders mirror numbers even before WASM is ready)
   syncPair('S_num','S_rng',1,1000,1);
   syncPair('K_num','K_rng',1,1000,1);
-  syncPair('r_num','r_rng',-0.05,0.15,0.0001);
-  syncPair('q_num','q_rng',0.00,0.10,0.0001);
-  syncPair('sigma_num','sigma_rng',0.01,2.00,0.0001);
-  syncPair('T_num','T_rng',0.01,10.00,0.01);
+  syncPair('r_num','r_rng',-0.05,0.25,0.0001);
+  syncPair('q_num','q_rng',0.00,0.15,0.0001);
+  syncPair('sigma_num','sigma_rng',0.01,1.50,0.0001);
+  syncPair('T_num','T_rng',0.01,30.00,0.01);
 
-  // Kick off WASM load (async)
   loadWasm();
 })();
