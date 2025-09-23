@@ -36,7 +36,7 @@ bs::Result finiteDiffGreeks(PriceFunc price, double S, double K, double r,
   R.gamma = (PSu - 2.0 * P0 + PSd) / (h.hS * h.hS);
   R.vega = (Pvup - Pvdo) / (2.0 * h.hsigma);
   R.rho = (Prup - Prdo) / (2.0 * h.hr);
-  R.theta = (Ptup - Ptdo) / (2.0 * h.hT);
+  R.theta = -(Ptup - Ptdo) / (2.0 * h.hT);
   return R;
 }
 
