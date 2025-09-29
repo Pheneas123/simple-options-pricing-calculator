@@ -1,6 +1,4 @@
 #pragma once
-#include <cmath>
-
 namespace bs {
 
 enum class Type { Call = 1, Put = -1 };
