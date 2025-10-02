@@ -23,3 +23,9 @@ Thumbs.db
 *.swo
 .vscode/
 .idea/
+
+*.out
+*.aux
+*.fdb_latexmk
+*.fls
+*.synctex.gz
