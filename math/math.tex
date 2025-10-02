@@ -28,15 +28,16 @@
 
 \title{Mathematics Behind the Options Calculator}
 \author{Pheneas Newman}
+\date{\today}
 \maketitle
 
 \section{European Call}
 
 \[
   \begin{aligned}
-    C   & = Se^{-qT} \Phi(d_1) - Ke^{-rT} \Phi(d_2)                 \\ d_1 & = \frac{\ln\!
-    \left(\tfrac{S}{K}\right) + (r + \sigma^2/2)T}{\sigma \sqrt{T}} \\
-    d_2 & = d_1 - \sigma \sqrt{T}                                   \\
+    C   & = S e^{-qT} \Phi(d_1) - K e^{-rT} \Phi(d_2)                             \\ d_1 & = \frac{\ln\!
+    \left(\tfrac{S}{K}\right) + (r - q + \tfrac{1}{2}\sigma^2)T}{\sigma \sqrt{T}} \\
+    d_2 & = d_1 - \sigma \sqrt{T}
   \end{aligned}
 \]
 
@@ -46,7 +47,7 @@
   \item[$K$] Strike price
   \item[$q$] Dividend rate
   \item[$T$] Time to maturity
-  \item[$r$] Risk free rate
+  \item[$r$] Risk-free rate
   \item[$\sigma$] Volatility
   \item[$\Phi$] Standard normal CDF
   \item[$\phi$] Standard normal pdf
@@ -54,7 +55,7 @@
 
 \subsection{Delta}
 \[
-  \boxed{\Delta = \frac{\partial C}{\partial S} = e^{-qT}\Phi(d_1)} \\
+  \boxed{\Delta = \frac{\partial C}{\partial S} = e^{-qT}\Phi(d_1)}
 \]
 
 \[
@@ -95,85 +96,118 @@
 
 \section{European Put}
 
+\[
+  \begin{aligned}
+    P   & = K e^{-rT} \,\Phi(-d_2) - S e^{-qT} \,\Phi(-d_1)                       \\ d_1 & = \frac{\ln\!
+    \left(\tfrac{S}{K}\right) + (r - q + \tfrac{1}{2}\sigma^2)T}{\sigma \sqrt{T}} \\
+    d_2 & = d_1 - \sigma \sqrt{T}
+  \end{aligned}
+\]
+
 \subsection{Delta}
 \[
   \begin{aligned}
   \end{aligned}
 \]
+
 \subsection{Gamma}
 \[
   \begin{aligned}
   \end{aligned}
 \]
+
 \subsection{Vega}
 \[
   \begin{aligned}
   \end{aligned}
 \]
+
 \subsection{Theta}
 \[
   \begin{aligned}
   \end{aligned}
 \]
+
 \subsection{Rho}
 \[
   \begin{aligned}
   \end{aligned}
 \]
 
-\section{Binary Call}
+\section{Binary Call (Cash-or-Nothing)}
+
 \[
   \begin{aligned}
+    C_{\mathrm{bin}} & = Q \, e^{-rT} \,\Phi(d_2)                                 \\ d_1 & = \frac{\ln\!
+    \left(\tfrac{S}{K}\right) + (r - q + \tfrac{1}{2}\sigma^2)T}{\sigma \sqrt{T}} \\
+    d_2              & = d_1 - \sigma \sqrt{T}
   \end{aligned}
 \]
+
 \subsection{Delta}
 \[
   \begin{aligned}
   \end{aligned}
 \]
+
 \subsection{Gamma}
 \[
   \begin{aligned}
   \end{aligned}
 \]
+
 \subsection{Vega}
 \[
   \begin{aligned}
   \end{aligned}
 \]
+
 \subsection{Theta}
 \[
   \begin{aligned}
   \end{aligned}
 \]
+
 \subsection{Rho}
 \[
   \begin{aligned}
   \end{aligned}
 \]
 
-\section{Binary Put}
+\section{Binary Put (Cash-or-Nothing)}
+
+\[
+  \begin{aligned}
+    P_{\mathrm{bin}} & = Q \, e^{-rT} \,\Phi(-d_2)                                \\ d_1 & = \frac{\ln\!
+    \left(\tfrac{S}{K}\right) + (r - q + \tfrac{1}{2}\sigma^2)T}{\sigma \sqrt{T}} \\
+    d_2              & = d_1 - \sigma \sqrt{T}
+  \end{aligned}
+\]
 
 \subsection{Delta}
 \[
   \begin{aligned}
   \end{aligned}
 \]
+
 \subsection{Gamma}
 \[
   \begin{aligned}
   \end{aligned}
 \]
+
 \subsection{Vega}
 \[
   \begin{aligned}
   \end{aligned}
 \]
+
 \subsection{Theta}
 \[
   \begin{aligned}
   \end{aligned}
 \]
+
 \subsection{Rho}
 \[
   \begin{aligned}
@@ -181,26 +215,39 @@
 \]
 
 \section{American Call}
+
+\[
+  \begin{aligned}
+    C^{A} & = \sup_{\tau \in \mathcal{T}[0,T]} \mathbb{E}^{\mathbb{Q}}\!
+    \left[ e^{-r \tau}\,(S_{\tau}-K)^{+} \right]                                                   \\
+          & \quad \text{(equals the European call when $q=0$, since early exercise has no value).}
+  \end{aligned}
+\]
+
 \subsection{Delta}
 \[
   \begin{aligned}
   \end{aligned}
 \]
+
 \subsection{Gamma}
 \[
   \begin{aligned}
   \end{aligned}
 \]
+
 \subsection{Vega}
 \[
   \begin{aligned}
   \end{aligned}
 \]
+
 \subsection{Theta}
 \[
   \begin{aligned}
   \end{aligned}
 \]
+
 \subsection{Rho}
 \[
   \begin{aligned}
@@ -208,26 +255,38 @@
 \]
 
 \section{American Put}
+
+\[
+  \begin{aligned}
+    P^{A} & = \sup_{\tau \in \mathcal{T}[0,T]} \mathbb{E}^{\mathbb{Q}}\!
+    \left[ e^{-r \tau}\,(K-S_{\tau})^{+} \right]
+  \end{aligned}
+\]
+
 \subsection{Delta}
 \[
   \begin{aligned}
   \end{aligned}
 \]
+
 \subsection{Gamma}
 \[
   \begin{aligned}
   \end{aligned}
 \]
+
 \subsection{Vega}
 \[
   \begin{aligned}
   \end{aligned}
 \]
+
 \subsection{Theta}
 \[
   \begin{aligned}
   \end{aligned}
 \]
+
 \subsection{Rho}
 \[
   \begin{aligned}

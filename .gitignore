@@ -29,3 +29,5 @@ Thumbs.db
 *.fdb_latexmk
 *.fls
 *.synctex.gz
+.latexindent.yaml
+*.bak*
