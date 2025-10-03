@@ -10,6 +10,7 @@
 \usepackage{hyperref}
 \usepackage{graphicx}
 \usepackage{enumitem}
+\usepackage{xcolor}
 
 \geometry{margin=1in}
 \setlength{\parskip}{6pt}
@@ -35,8 +36,8 @@
 
 \[
   \begin{aligned}
-    C   & = S e^{-qT} \Phi(d_1) - K e^{-rT} \Phi(d_2)                             \\ d_1 & = \frac{\ln\!
-    \left(\tfrac{S}{K}\right) + (r - q + \tfrac{1}{2}\sigma^2)T}{\sigma \sqrt{T}} \\
+    C   & = S e^{-qT} \Phi(d_1) - K e^{-rT} \Phi(d_2) \\ 
+    d_1 & = \frac{\ln\!\left(\tfrac{S}{K}\right) + (r - q + \tfrac{1}{2}\sigma^2)T}{\sigma \sqrt{T}} \\
     d_2 & = d_1 - \sigma \sqrt{T}
   \end{aligned}
 \]
@@ -61,7 +62,7 @@
 \[
   \begin{aligned}
     \Delta & = \frac{\partial C}{\partial S} = e^{-qT}\Phi(d_1) + Se^{-q T}\phi(d_1)\left(\frac{\partial d_1}{\partial S}\right) - Ke^{-rT}\phi(d_2)\left(\frac{\partial d_2}{\partial S} \right) \\
-           & = e^{-qT}\Phi(d_1) + \underbrace{Se^{-qT}\phi(d_1)\frac{1}{S \sigma \sqrt{T}} - Ke^{-rT}\phi(d_2)\frac{1}{S \sigma \sqrt{T}}}_{=\,0}                                                 \\
+           & = e^{-qT}\Phi(d_1) + \underbrace{Se^{-qT}\phi(d_1)\frac{1}{S \sigma \sqrt{T}} - Ke^{-rT}\phi(d_2)\frac{1}{S \sigma \sqrt{T}}}_{=\,0} \\
     \Delta & = e^{-qT}\Phi(d_1)
   \end{aligned}
 \]
@@ -76,7 +77,7 @@
   \begin{aligned}
     \Gamma & = \frac{\partial^2 C}{\partial S^2} = \frac{\partial \Delta}{\partial S} \\
            & = e^{-qT}\frac{\partial}{\partial S}(\Phi(d_1)) \\
-    \Gamma & = e^{-qT}(\phi(d_1)\frac{1}{S\sigma\sqrt{T}} \\
+    \Gamma & = e^{-qT}\phi(d_1)\frac{1}{S\sigma\sqrt{T}} \\
   \end{aligned}
 \]
 
@@ -86,9 +87,21 @@
 \boxed{\nu = \frac{\partial C}{\partial \sigma} = Se^{-qT}\phi(d_1)\sqrt{T}}
 \]
 
-
 \[
   \begin{aligned}
+    \nu & = \frac{\partial C}{\partial \sigma} 
+          = Se^{-qT}\phi(d_1)\left(\frac{\partial d_1}{\partial \sigma}\right) 
+            - K e ^{-r T} \phi(d_2) \left(\frac{\partial d_2}{\partial \sigma}\right) \\
+    & \textcolor{violet}{\frac{\partial d_1}{\partial \sigma} 
+      = \frac{\partial}{\partial \sigma}\left(\frac{\ln(\tfrac{S}{K})}{\sigma \sqrt{T}} 
+        + \frac{T(r - q)}{\sigma \sqrt{T}} \right) + \frac{1}{2} \sqrt{T}}  \\[6pt]
+    & \textcolor{blue}{\frac{\partial d_2}{\partial \sigma} 
+      = \frac{\partial}{\partial \sigma}\left(\frac{\ln(\tfrac{S}{K})}{\sigma \sqrt{T}} 
+        + \frac{T(r - q)}{\sigma \sqrt{T}} \right) - \frac{1}{2} \sqrt{T}} \\[6pt]
+    & \underbrace{\frac{\partial d_1}{\partial \sigma} 
+      - \frac{\partial d_2}{\partial \sigma}}_{\text{these terms cancel}} 
+      = \sqrt{T} \\
+    \nu & = Se^{-qT} \phi(d_1) \sqrt{T} \\
   \end{aligned}
 \]
 
@@ -107,6 +120,27 @@
 \]
 
 \section{European Put}
+
+\[
+  \begin{aligned}
+    P   & = K e^{-rT}\,\Phi(-d_2) \;-\; S e^{-qT}\,\Phi(-d_1) \\
+    d_1 & = \frac{\ln\!\left(\tfrac{S}{K}\right) + (r - q + \tfrac{1}{2}\sigma^2)T}{\sigma \sqrt{T}} \\
+    d_2 & = d_1 - \sigma \sqrt{T}
+  \end{aligned}
+\]
+
+\begin{description}
+  \item[$P$] Option price
+  \item[$S$] Spot price
+  \item[$K$] Strike price
+  \item[$q$] Dividend rate
+  \item[$T$] Time to maturity
+  \item[$r$] Risk-free rate
+  \item[$\sigma$] Volatility
+  \item[$\Phi$] Standard normal CDF
+  \item[$\phi$] Standard normal pdf
+\end{description}
+
 
 \[
   \begin{aligned}
