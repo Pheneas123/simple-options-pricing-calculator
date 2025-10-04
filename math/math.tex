@@ -49,6 +49,11 @@
   \end{aligned}
 \]
 
+\[
+  \boxed{S e^{-qT}\,\phi(d_1) = K e^{-rT}\,\phi(d_2)}
+  \qquad\text{(Black-Scholes identity)}
+\]
+
 \begin{description}
   \item[$C$] Option price
   \item[$S$] Spot price
@@ -98,17 +103,17 @@
   \begin{aligned}
     \nu & = \frac{\partial C}{\partial \sigma} 
           = Se^{-qT}\phi(d_1)\left(\frac{\partial d_1}{\partial \sigma}\right) 
-            - K e ^{-r T} \phi(d_2) \left(\frac{\partial d_2}{\partial \sigma}\right) \\
+            - K e ^{-r T} \phi(d_2) \left(\frac{\partial d_2}{\partial \sigma}\right) \\[4pt]
     & \textcolor{purple1}{\frac{\partial d_1}{\partial \sigma} 
-      = \frac{\partial}{\partial \sigma}\left(\frac{\ln(\tfrac{S}{K})}{\sigma \sqrt{T}} 
+      = \frac{\partial}{\partial \sigma}\!\left(\frac{\ln(\tfrac{S}{K})}{\sigma \sqrt{T}} 
         + \frac{T(r - q)}{\sigma \sqrt{T}} \right) + \frac{1}{2} \sqrt{T}}  \\[6pt]
     & \textcolor{blue1}{\frac{\partial d_2}{\partial \sigma} 
-      = \frac{\partial}{\partial \sigma}\left(\frac{\ln(\tfrac{S}{K})}{\sigma \sqrt{T}} 
+      = \frac{\partial}{\partial \sigma}\!\left(\frac{\ln(\tfrac{S}{K})}{\sigma \sqrt{T}} 
         + \frac{T(r - q)}{\sigma \sqrt{T}} \right) - \frac{1}{2} \sqrt{T}} \\[6pt]
-    & \underbrace{\frac{\partial d_1}{\partial \sigma} 
-      - \frac{\partial d_2}{\partial \sigma}}_{\text{these terms cancel}} 
-      = \sqrt{T} \\
-    \nu & = Se^{-qT} \phi(d_1) \sqrt{T} \\
+    & \textcolor{purple1}{\frac{\partial d_1}{\partial \sigma}}
+      - \textcolor{blue1}{\frac{\partial d_2}{\partial \sigma}}
+      = \sqrt{T} \\[6pt]
+    \nu & = Se^{-qT}\phi(d_1)\sqrt{T}
   \end{aligned}
 \]
 
