@@ -117,12 +117,20 @@
 
 \subsection{Theta}
 \[
-\boxed{\Theta = -e^{-qT} \frac{S\phi(d_1)\sigma}{2\sqrt{T}}  -rKe^{-rT}\Phi(d_2) + qSe^{-qT}\Phi(d_1)} \\
+\boxed{\Theta = -e^{-qT} \frac{S\phi(d_1)\sigma}{2\sqrt{T}} 
+  - rKe^{-rT}\Phi(d_2) + qSe^{-qT}\Phi(d_1)} \\
 \]
 
 \[
   \begin{aligned}
-    \Theta & = \frac{\partial C}{\partial T} = S\left(-qe^{-qT} \Phi(d_1) + e^{-qT} \phi(d_1) \frac{\partial d_1}{\partial T}\right) - K \left(-re^{-rT} \Phi(d_2) +e ^{-rT} \phi(d_2) -\frac{\partial d_2}{\partial T} \right) \\
+    \Theta & = \frac{\partial C}{\partial T} = S\left(-qe^{-qT}\Phi(d_1) + e^{-qT}\phi(d_1)\frac{\partial d_1}{\partial T}\right) - K\left(-re^{-rT}\Phi(d_2) + e^{-rT}\phi(d_2)\frac{\partial d_2}{\partial T}\right) \\[6pt]
+    & \textcolor{purple1}{\frac{\partial d_1}{\partial T} = \frac{(\sigma^2 + 2r - 2q)T - 2\ln(\tfrac{S}{K})}{4\sigma T^{\frac{3}{2}}} \coloneqq A} \\[6pt]
+    & \textcolor{blue1}{\frac{\partial d_2}{\partial T} = \frac{(\sigma^2 + 2r - 2q)T - 2\ln(\tfrac{S}{K})}{4\sigma T^{\frac{3}{2}}} - \frac{\sigma}{2\sqrt{T}} \coloneqq A - \frac{\sigma}{2\sqrt{T}}} \\[6pt]
+    & = Se^{-qT}(-q\Phi(d_1) + \phi(d_1)A) - Ke^{-rT}(-r\Phi(d_2) + \phi(d_2)(A - \tfrac{\sigma}{2\sqrt{T}})) \\[6pt]
+    & = -qSe^{-qT}\Phi(d_1) + rKe^{-rT}\Phi(d_2) + Ke^{-rT}\phi(d_2)\tfrac{\sigma}{2\sqrt{T}} + \underbrace{A(Se^{-qT}\phi(d_1) - Ke^{-rT}\phi(d_2))}_{= 0} \\[6pt]
+    & = Ke^{-rT}\phi(d_2)\tfrac{\sigma}{2\sqrt{T}} + rKe^{-rT}\Phi(d_2) - qSe^{-qT}\Phi(d_1) \\[8pt]
+    & \text{\parbox{0.85\linewidth}{Using the Black-Scholes identity $S e^{-qT}\phi(d_1) = K e^{-rT}\phi(d_2)$, and expressing $\Theta$ as the negative:}} \\[4pt]
+    \Theta & = -e^{-qT} \frac{S\phi(d_1)\sigma}{2\sqrt{T}} - rKe^{-rT}\Phi(d_2) + qSe^{-qT}\Phi(d_1)
   \end{aligned}
 \]
 
