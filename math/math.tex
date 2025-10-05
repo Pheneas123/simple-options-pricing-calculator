@@ -8,8 +8,6 @@
 \usepackage{bm}
 \usepackage{geometry}
 \usepackage{hyperref}
-\usepackage{graphicx}
-\usepackage{enumitem}
 \usepackage{xcolor}
 
 \geometry{margin=1in}
@@ -96,12 +94,12 @@
 \subsection{Vega}
 
 \[
-\boxed{\nu = \frac{\partial C}{\partial \sigma} = Se^{-qT}\phi(d_1)\sqrt{T}}
+\boxed{\mathcal{V} = \frac{\partial C}{\partial \sigma} = Se^{-qT}\phi(d_1)\sqrt{T}}
 \]
 
 \[
   \begin{aligned}
-    \nu & = \frac{\partial C}{\partial \sigma} 
+    \mathcal{V} & = \frac{\partial C}{\partial \sigma} 
           = Se^{-qT}\phi(d_1)\left(\frac{\partial d_1}{\partial \sigma}\right) 
             - K e ^{-r T} \phi(d_2) \left(\frac{\partial d_2}{\partial \sigma}\right) \\[4pt]
     & \textcolor{purple1}{\frac{\partial d_1}{\partial \sigma} 
@@ -113,14 +111,15 @@
     & \textcolor{purple1}{\frac{\partial d_1}{\partial \sigma}}
       - \textcolor{blue1}{\frac{\partial d_2}{\partial \sigma}}
       = \sqrt{T} \\[6pt]
-    \nu & = Se^{-qT}\phi(d_1)\sqrt{T}
+    \mathcal{V} & = Se^{-qT}\phi(d_1)\sqrt{T}
   \end{aligned}
 \]
 
 \subsection{Theta}
 \[
-\boxed{\Theta = 35} \\
+\boxed{\Theta = -e^{-qT} \frac{S\phi(d_1)\sigma}{2\sqrt{T}}  -rKe^{-rT}\Phi(d_2) + qSe^{-qT}\Phi(d_1)} \\
 \]
+
 \[
   \begin{aligned}
     \Theta & = \frac{\partial C}{\partial T} = S\left(-qe^{-qT} \Phi(d_1) + e^{-qT} \phi(d_1) \frac{\partial d_1}{\partial T}\right) - K \left(-re^{-rT} \Phi(d_2) +e ^{-rT} \phi(d_2) -\frac{\partial d_2}{\partial T} \right) \\
@@ -130,9 +129,15 @@
 \subsection{Rho}
 
 \[
+\boxed{ \rho = KTe^{-rT}\Phi(d_2)} \\
+\]
+
+\[
   \begin{aligned}
   \end{aligned}
 \]
+
+\newpage
 
 \section{European Put}
 
@@ -154,6 +159,265 @@
   \item[$\sigma$] Volatility
   \item[$\Phi$] Standard normal CDF
   \item[$\phi$] Standard normal pdf
+\end{description}
+
+\subsection{Delta}
+
+\[
+  \boxed{\Delta = \frac{\partial P}{\partial S} = -e^{-qT}\Phi(-d_1)} \\
+\]
+
+\[
+  \begin{aligned}
+  \end{aligned}
+\]
+
+\subsection{Gamma}
+
+\[
+  \boxed{\Gamma = \frac{\partial^2 P}{\partial S^2} = e^{-qT}\frac{\phi(d_1)}{S\sigma\sqrt{T}} = Ke^{-rT} \frac{\phi(d_2)}{S^2\sigma\sqrt{T}}}\\
+\]
+
+\[
+  \begin{aligned}
+  \end{aligned}
+\]
+
+Same as European Call derivation.
+
+\subsection{Vega}
+
+\[
+  \boxed{\mathcal{V} = \frac{\partial^2 P}{\partial S^2} = e^{-qT}\frac{\phi(d_1)}{S\sigma\sqrt{T}} = Ke^{-rT} \frac{\phi(d_2)}{S^2\sigma\sqrt{T}}}\\
+\]
+
+\[
+  \begin{aligned}
+  \end{aligned}
+\]
+
+\subsection{Theta}
+
+\[
+  \boxed{\Theta = \frac{\partial P}{\partial T} = -e^{-qT}\frac{S\phi(d_1)\sigma}{2\sqrt{T}} + rKe^{-rT}\Phi(-d_2) - qSe^{-qT}\Phi(-d_1)}\\
+\]
+
+
+\[
+  \begin{aligned}
+  \end{aligned}
+\]
+
+\subsection{Rho}
+
+\[
+  \boxed{\rho = \frac{\partial^2 P}{\partial S^2} = e^{-qT}\frac{\phi(d_1)}{S\sigma\sqrt{T}} = Ke^{-rT} \frac{\phi(d_2)}{S^2\sigma\sqrt{T}}}\\
+\]
+
+\[
+  \begin{aligned}
+  \end{aligned}
+\]
+
+\newpage
+
+\section{Binary Call (Cash-or-Nothing)}
+
+\[
+  \begin{aligned}
+    C_{\mathrm{bin}} & = Q \, e^{-rT} \,\Phi(d_2) \\
+    d_1 & = \frac{\ln\!\left(\tfrac{S}{K}\right) + (r - q + \tfrac{1}{2}\sigma^2)T}{\sigma \sqrt{T}} \\
+    d_2 & = d_1 - \sigma \sqrt{T}
+  \end{aligned}
+\]
+
+\begin{description}
+  \item[$C_{\mathrm{bin}}$] Option price
+  \item[$Q$] Fixed cash payout if \( S_T > K \)
+  \item[$S$] Spot price
+  \item[$K$] Strike price
+  \item[$q$] Dividend rate
+  \item[$T$] Time to maturity
+  \item[$r$] Risk-free rate
+  \item[$\sigma$] Volatility
+  \item[$\Phi$] Standard normal CDF
+  \item[$\phi$] Standard normal pdf
+\end{description}
+
+\subsection{Delta}
+\[
+  \boxed{\Delta = \frac{\partial C_{\mathrm{bin}}}{\partial S} 
+  = Q\, e^{-rT}\, \frac{\phi(d_2)}{S\,\sigma\,\sqrt{T}}}
+\]
+
+\[
+  \begin{aligned}
+  \end{aligned}
+\]
+
+\subsection{Gamma}
+\[
+  \boxed{\Gamma = \frac{\partial^2 C_{\mathrm{bin}}}{\partial S^2} 
+  = -Q\, e^{-rT}\, \frac{d_1\,\phi(d_2)}{S^2\,\sigma^2\,T}}
+\]
+
+\[
+  \begin{aligned}
+  \end{aligned}
+\]
+
+\subsection{Vega}
+\[
+  \boxed{\mathcal{V} = \frac{\partial C_{\mathrm{bin}}}{\partial \sigma} 
+  = -Q\, e^{-rT}\, d_1\,\phi(d_2)}
+\]
+
+\[
+  \begin{aligned}
+  \end{aligned}
+\]
+
+\subsection{Theta}
+\[
+  \boxed{\Theta = \frac{\partial C_{\mathrm{bin}}}{\partial T}
+  = Q\, e^{-rT}\!\left[
+  -r\,\Phi(d_2) 
+  + \frac{\phi(d_2)}{2T}
+    \left(
+      \frac{\ln(\tfrac{S}{K}) + (r - q - \tfrac{1}{2}\sigma^2)T}{\sigma\sqrt{T}}
+    \right)
+  \right]}
+\]
+
+\[
+  \begin{aligned}
+  \end{aligned}
+\]
+
+\subsection{Rho}
+\[
+  \boxed{\rho = \frac{\partial C_{\mathrm{bin}}}{\partial r}
+  = Q\, e^{-rT}\!\left(
+    -T\,\Phi(d_2)
+    + \frac{\sqrt{T}}{\sigma}\,\phi(d_2)
+  \right)}
+\]
+
+\[
+  \begin{aligned}
+  \end{aligned}
+\]
+
+\newpage
+
+\section{Binary Put (Cash-or-Nothing)}
+
+\[
+  \begin{aligned}
+    P_{\mathrm{bin}} & = Q \, e^{-rT} \,\Phi(-d_2) \\ 
+    d_1 & = \frac{\ln\!\left(\tfrac{S}{K}\right) + (r - q + \tfrac{1}{2}\sigma^2)T}{\sigma \sqrt{T}} \\
+    d_2 & = d_1 - \sigma \sqrt{T}
+  \end{aligned}
+\]
+
+\begin{description}
+  \item[$P_{\mathrm{bin}}$] Option price
+  \item[$Q$] Fixed cash payout if \( S_T < K \)
+  \item[$S$] Spot price
+  \item[$K$] Strike price
+  \item[$q$] Dividend rate
+  \item[$T$] Time to maturity
+  \item[$r$] Risk-free rate
+  \item[$\sigma$] Volatility
+  \item[$\Phi$] Standard normal CDF
+  \item[$\phi$] Standard normal pdf
+\end{description}
+
+\subsection{Delta}
+\[
+  \boxed{\Delta = \frac{\partial P_{\mathrm{bin}}}{\partial S}
+  = -Q\, e^{-rT}\, \frac{\phi(d_2)}{S\,\sigma\,\sqrt{T}}}
+\]
+
+\[
+  \begin{aligned}
+  \end{aligned}
+\]
+
+\subsection{Gamma}
+\[
+  \boxed{\Gamma = \frac{\partial^2 P_{\mathrm{bin}}}{\partial S^2}
+  = Q\, e^{-rT}\, \frac{d_1\,\phi(d_2)}{S^2\,\sigma^2\,T}}
+\]
+
+\[
+  \begin{aligned}
+  \end{aligned}
+\]
+
+\subsection{Vega}
+\[
+  \boxed{\mathcal{V} = \frac{\partial P_{\mathrm{bin}}}{\partial \sigma}
+  = Q\, e^{-rT}\, d_1\,\phi(d_2)}
+\]
+
+\[
+  \begin{aligned}
+  \end{aligned}
+\]
+
+\subsection{Theta}
+\[
+  \boxed{\Theta = \frac{\partial P_{\mathrm{bin}}}{\partial T}
+  = Q\, e^{-rT}\!\left[
+  -r\,\Phi(-d_2)
+  - \frac{\phi(d_2)}{2T}
+    \left(
+      \frac{\ln(\tfrac{S}{K}) + (r - q - \tfrac{1}{2}\sigma^2)T}{\sigma\sqrt{T}}
+    \right)
+  \right]}
+\]
+
+\[
+  \begin{aligned}
+  \end{aligned}
+\]
+
+\subsection{Rho}
+\[
+  \boxed{\rho = \frac{\partial P_{\mathrm{bin}}}{\partial r}
+  = Q\, e^{-rT}\!\left(
+    -T\,\Phi(-d_2)
+    - \frac{\sqrt{T}}{\sigma}\,\phi(d_2)
+  \right)}
+\]
+
+\[
+  \begin{aligned}
+  \end{aligned}
+\]
+
+\newpage
+
+\section{American Call}
+
+\[
+  \begin{aligned}
+    C^{A} & = \sup_{\tau \in \mathcal{T}[0,T]} \mathbb{E}^{\mathbb{Q}}\!\left[ e^{-r \tau}\,(S_{\tau}-K)^{+} \right] \\[4pt]
+          & \quad \text{(equals the European call when $q=0$, since early exercise has no value).}
+  \end{aligned}
+\]
+
+\begin{description}
+  \item[$C^{A}$] American call option price
+  \item[$S$] Spot price
+  \item[$K$] Strike price
+  \item[$q$] Dividend rate
+  \item[$T$] Time to maturity
+  \item[$r$] Risk-free rate
+  \item[$\sigma$] Volatility
+  \item[$\tau$] Optimal stopping time (\( 0 \le \tau \le T \))
+  \item[$\mathbb{E}^{\mathbb{Q}}$] Expectation under the risk-neutral measure
 \end{description}
 
 \subsection{Delta}
@@ -186,124 +450,7 @@
   \end{aligned}
 \]
 
-\section{Binary Call (Cash-or-Nothing)}
-
-\[
-  \begin{aligned}
-    C_{\mathrm{bin}} & = Q \, e^{-rT} \,\Phi(d_2) \\
-    d_1 & = \frac{\ln\!\left(\tfrac{S}{K}\right) + (r - q + \tfrac{1}{2}\sigma^2)T}{\sigma \sqrt{T}} \\
-    d_2 & = d_1 - \sigma \sqrt{T}
-  \end{aligned}
-\]
-
-\subsection{Delta}
-\[
-  \begin{aligned}
-  \end{aligned}
-\]
-
-\subsection{Gamma}
-\[
-  \begin{aligned}
-  \end{aligned}
-\]
-
-\subsection{Vega}
-\[
-  \begin{aligned}
-  \end{aligned}
-\]
-
-\subsection{Theta}
-\[
-  \begin{aligned}
-  \end{aligned}
-\]
-
-\subsection{Rho}
-\[
-  \begin{aligned}
-  \end{aligned}
-\]
-
-\section{Binary Put (Cash-or-Nothing)}
-
-\[
-  \begin{aligned}
-    P_{\mathrm{bin}} & = Q \, e^{-rT} \,\Phi(-d_2) \\ 
-    d_1 & = \frac{\ln\!\left(\tfrac{S}{K}\right) + (r - q + \tfrac{1}{2}\sigma^2)T}{\sigma \sqrt{T}} \\
-    d_2 & = d_1 - \sigma \sqrt{T}
-  \end{aligned}
-\]
-
-\subsection{Delta}
-\[
-  \begin{aligned}
-  \end{aligned}
-\]
-
-\subsection{Gamma}
-\[
-  \begin{aligned}
-  \end{aligned}
-\]
-
-\subsection{Vega}
-\[
-  \begin{aligned}
-  \end{aligned}
-\]
-
-\subsection{Theta}
-\[
-  \begin{aligned}
-  \end{aligned}
-\]
-
-\subsection{Rho}
-\[
-  \begin{aligned}
-  \end{aligned}
-\]
-
-\section{American Call}
-
-\[
-  \begin{aligned}
-    C^{A} & = \sup_{\tau \in \mathcal{T}[0,T]} \mathbb{E}^{\mathbb{Q}}\!\left[ e^{-r \tau}\,(S_{\tau}-K)^{+} \right] \\
-          & \quad \text{(equals the European call when $q=0$, since early exercise has no value).}
-  \end{aligned}
-\]
-
-\subsection{Delta}
-\[
-  \begin{aligned}
-  \end{aligned}
-\]
-
-\subsection{Gamma}
-\[
-  \begin{aligned}
-  \end{aligned}
-\]
-
-\subsection{Vega}
-\[
-  \begin{aligned}
-  \end{aligned}
-\]
-
-\subsection{Theta}
-\[
-  \begin{aligned}
-  \end{aligned}
-\]
-
-\subsection{Rho}
-\[
-  \begin{aligned}
-  \end{aligned}
-\]
+\newpage
 
 \section{American Put}
 
@@ -312,6 +459,18 @@
     P^{A} & = \sup_{\tau \in \mathcal{T}[0,T]} \mathbb{E}^{\mathbb{Q}}\!\left[ e^{-r \tau}\,(K-S_{\tau})^{+} \right]
   \end{aligned}
 \]
+
+\begin{description}
+  \item[$P^{A}$] American put option price
+  \item[$S$] Spot price
+  \item[$K$] Strike price
+  \item[$q$] Dividend rate
+  \item[$T$] Time to maturity
+  \item[$r$] Risk-free rate
+  \item[$\sigma$] Volatility
+  \item[$\tau$] Optimal stopping time (\( 0 \le \tau \le T \))
+  \item[$\mathbb{E}^{\mathbb{Q}}$] Expectation under the risk-neutral measure
+\end{description}
 
 \subsection{Delta}
 \[
