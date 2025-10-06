@@ -117,8 +117,7 @@
 
 \subsection{Theta}
 \[
-\boxed{\Theta = -e^{-qT} \frac{S\phi(d_1)\sigma}{2\sqrt{T}} 
-  - rKe^{-rT}\Phi(d_2) + qSe^{-qT}\Phi(d_1)} \\
+\boxed{\Theta = \frac{\partial C}{\partial T}= -e^{-qT} \frac{S\phi(d_1)\sigma}{2\sqrt{T}} - rKe^{-rT}\Phi(d_2) + qSe^{-qT}\Phi(d_1)} \\
 \]
 
 \[
@@ -137,11 +136,16 @@
 \subsection{Rho}
 
 \[
-\boxed{ \rho = KTe^{-rT}\Phi(d_2)} \\
+\boxed{ \rho = \frac{\partial C}{\partial r}= KTe^{-rT}\Phi(d_2)} \\
 \]
 
 \[
   \begin{aligned}
+    \rho & = \frac{\partial C}{\partial r} = Se^{-qT}(\phi(d_1)\frac{\partial d_1}{\partial r}) - K(-Te^{-rT}\Phi(d_2) + e^{-rT}\phi(d_2)\frac{\partial d_2}{\partial r}) \\ 
+         & \textcolor{purple1}{\frac{\partial d_1}{\partial r} = \frac{T}{\sigma \sqrt{T}} = \frac{\sqrt{T}}{\sigma} = \frac{\partial d_2}{\partial r}} \\[6pt]
+         & = Se^{-qT}\phi(d_1)\frac{\sqrt{T}}{\sigma} + KTe^{-rT}\Phi(d_2) - Ke^{-rT}\phi(d_2)\frac{\sqrt{T}}{\sigma} \\ 
+         & = \frac{\sqrt{T}}{\sigma}\left(\underbrace{Se^{-qT}\phi(d_1) - Ke^{-rT}\phi(d_2)}_{= 0}\right) + KTe^{-rT}\Phi(d_2) \\ 
+         \rho & = KTe^{-rT}\Phi(d_2)
   \end{aligned}
 \]
 
@@ -219,7 +223,7 @@ Same as European Call derivation.
 \subsection{Rho}
 
 \[
-  \boxed{\rho = \frac{\partial^2 P}{\partial S^2} = e^{-qT}\frac{\phi(d_1)}{S\sigma\sqrt{T}} = Ke^{-rT} \frac{\phi(d_2)}{S^2\sigma\sqrt{T}}}\\
+  \boxed{\rho = \frac{\partial P}{\partial r} = TKe^{-rT}\Phi(-d_2)}\\
 \]
 
 \[
