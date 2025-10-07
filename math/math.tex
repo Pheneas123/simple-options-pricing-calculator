@@ -245,10 +245,10 @@ Same as European Call derivation.
 
 \[
 \begin{aligned}
-  \rho & = \frac{\partial P}{\partial r} = K\left(T e^{-rT}\Phi(-d_2) + \phi(d_2)\left(-\frac{\partial d_2}{\partial r}\right)e^{-rT}\right) - S e^{-qT}\left(\phi(d_1)\left(-\frac{\partial d_1}{\partial r}\right)\right) \\[4pt]
+  \rho & = \frac{\partial P}{\partial r} = K\left(-T e^{-rT}\Phi(-d_2) + e^{-rT}\phi(d_2)\left(-\frac{\partial d_2}{\partial r}\right)\right) - S e^{-qT}\phi(d_1)\left(-\frac{\partial d_1}{\partial r}\right) \\[4pt]
   & \textcolor{purple1}{\frac{\partial d_1}{\partial r} = \frac{T}{\sigma\sqrt{T}} = \frac{\sqrt{T}}{\sigma} = \frac{\partial d_2}{\partial r}} \\[6pt]
-  & = T K e^{-rT}\Phi(-d_2) - \underbrace{K e^{-rT}\phi(d_2)\left(\frac{\sqrt{T}}{\sigma}\right) + S e^{-qT}\phi(d_1)\left(\frac{\sqrt{T}}{\sigma}\right)}_{ = 0} \\[6pt]
- \rho & = T K e^{-rT}\Phi(-d_2)
+  & = -T K e^{-rT}\Phi(-d_2) - \underbrace{K e^{-rT}\phi(d_2)\left(\frac{\sqrt{T}}{\sigma}\right) - S e^{-qT}\phi(d_1)\left(\frac{\sqrt{T}}{\sigma}\right)}_{=\,0} \\[6pt]
+  \rho & = -T K e^{-rT}\Phi(-d_2)
 \end{aligned}
 \]
 
