@@ -203,11 +203,16 @@ Same as European Call derivation.
 \subsection{Vega}
 
 \[
-  \boxed{\mathcal{V} = \frac{\partial^2 P}{\partial S^2} = e^{-qT}\frac{\phi(d_1)}{S\sigma\sqrt{T}} = Ke^{-rT} \frac{\phi(d_2)}{S^2\sigma\sqrt{T}}}\\
+  \boxed{\mathcal{V} = \frac{\partial P}{\partial \sigma} = S e^{-qT}\phi(d_1)\sqrt{T} = K e^{-rT}\phi(d_2)\sqrt{T}}\\
 \]
 
 \[
   \begin{aligned}
+    \mathcal{V} = \frac{\partial P}{\partial \sigma} & = Ke^{-rT}\left(\phi(d_2)\left(-\frac{\partial d_2}{\partial \sigma}\right)\right) - Se^{-qT}\left(\phi(d_1)\left(-\frac{\partial d_1}{\partial \sigma}\right)\right) \\
+      & = Se^{-qT}\phi(d_1)\left(\frac{\partial d_1}{\partial \sigma}\right) - Ke^{-rT}\phi(d_2)\left(\frac{\partial d_2}{\partial \sigma}\right) \\
+      & \textcolor{purple1}{\frac{\partial d_1}{\partial \sigma} = - \frac{\ln\left(\frac{S}{K}\right) + (r-q)T}{\sigma^2 \sqrt{T}} + \frac{1}{2}\sqrt{T} } \\[6pt]
+      & \textcolor{blue1}{\frac{\partial d_2}{\partial \sigma} = - \frac{\ln\left(\frac{S}{K}\right) + (r-q)T}{\sigma^2 \sqrt{T}} - \frac{1}{2}\sqrt{T} } \\[6pt]
+      \mathcal{V} & = Se^{-qT}\phi(d_1)\sqrt{T} =  Ke^{-rT}\phi(d_2)\sqrt{T} \\ 
   \end{aligned}
 \]
 
@@ -219,9 +224,18 @@ Same as European Call derivation.
 
 
 \[
-  \begin{aligned}
-  \end{aligned}
+\begin{aligned}
+  \Theta & = \frac{\partial P}{\partial T} = K\left(-r e^{-rT}\Phi(-d_2) + e^{-rT}\phi(d_2)\left(-\frac{\partial d_2}{\partial T}\right)\right) - S\left(-q e^{-qT}\Phi(-d_1) + e^{-qT}\phi(d_1)\left(-\frac{\partial d_1}{\partial T}\right)\right) \\[4pt]
+  & = K e^{-rT}\left(-r\Phi(-d_2) - \phi(d_2)\frac{\partial d_2}{\partial T}\right) - S e^{-qT}\left(-q\Phi(-d_1) - \phi(d_1)\frac{\partial d_1}{\partial T}\right) \\[6pt]
+  & \textcolor{purple1}{\frac{\partial d_1}{\partial T} = \frac{\left(\sigma^2 + 2r - 2q\right)T - 2\ln\left(\frac{S}{K}\right)}{4\sigma T^{3/2}} = A} \\[6pt]
+  & \textcolor{blue1}{\frac{\partial d_2}{\partial T} = \frac{\left(\sigma^2 + 2r - 2q\right)T - 2\ln\left(\frac{S}{K}\right)}{4\sigma T^{3/2}} - \frac{\sigma}{2\sqrt{T}} = A - \frac{\sigma}{2\sqrt{T}}} \\[6pt]
+  & = S e^{-qT}\left(q\Phi(-d_1) + \phi(d_1)A\right) - K e^{-rT}\left(r\Phi(-d_2) + \phi(d_2)\left(A - \frac{\sigma}{2\sqrt{T}}\right)\right) \\[6pt]
+  & = qS e^{-qT}\Phi(-d_1) - rK e^{-rT}\Phi(-d_2) + K e^{-rT}\phi(d_2)\frac{\sigma}{2\sqrt{T}} + A\left(S e^{-qT}\phi(d_1) - K e^{-rT}\phi(d_2)\right) \\[6pt]
+  & = qS e^{-qT}\Phi(-d_1) - K e^{-rT}\left(r\Phi(-d_2) + \phi(d_2)\frac{\sigma}{2\sqrt{T}}\right) - S e^{-qT}\phi(d_1)\frac{\sigma}{2\sqrt{T}} \\[6pt]
+  & = -S e^{-qT}\phi(d_1)\frac{\sigma}{2\sqrt{T}} + rK e^{-rT}\Phi(-d_2) - qS e^{-qT}\Phi(-d_1)
+\end{aligned}
 \]
+
 
 \subsection{Rho}
 
