@@ -183,7 +183,7 @@
   \begin{aligned}
     \Delta & = \frac{\partial P}{\partial S} = Ke^{-rT}\phi(d_2)\left(-\frac{\partial d_2}{\partial S}\right) - e^{-qT}\left(\Phi(-d_1) + S\phi(-d_1)\left(-\frac{\partial d_1}{\partial S}\right)\right) \\
     &\text{Using Black-Scholes identity:} \\
-    \Delta & = -e^{-qT}\Phi(-d_2) \\
+    \Delta & = -e^{-qT}\Phi(-d_1) \\
   \end{aligned}
 \]
 
@@ -240,13 +240,18 @@ Same as European Call derivation.
 \subsection{Rho}
 
 \[
-  \boxed{\rho = \frac{\partial P}{\partial r} = TKe^{-rT}\Phi(-d_2)}\\
+  \boxed{\rho = \frac{\partial P}{\partial r} = - T K e^{-rT}\Phi(-d_2)}\\
 \]
 
 \[
-  \begin{aligned}
-  \end{aligned}
+\begin{aligned}
+  \rho & = \frac{\partial P}{\partial r} = K\left(T e^{-rT}\Phi(-d_2) + \phi(d_2)\left(-\frac{\partial d_2}{\partial r}\right)e^{-rT}\right) - S e^{-qT}\left(\phi(d_1)\left(-\frac{\partial d_1}{\partial r}\right)\right) \\[4pt]
+  & \textcolor{purple1}{\frac{\partial d_1}{\partial r} = \frac{T}{\sigma\sqrt{T}} = \frac{\sqrt{T}}{\sigma} = \frac{\partial d_2}{\partial r}} \\[6pt]
+  & = T K e^{-rT}\Phi(-d_2) - \underbrace{K e^{-rT}\phi(d_2)\left(\frac{\sqrt{T}}{\sigma}\right) + S e^{-qT}\phi(d_1)\left(\frac{\sqrt{T}}{\sigma}\right)}_{ = 0} \\[6pt]
+ \rho & = T K e^{-rT}\Phi(-d_2)
+\end{aligned}
 \]
+
 
 \newpage
 
@@ -297,8 +302,7 @@ Same as European Call derivation.
 
 \subsection{Vega}
 \[
-  \boxed{\mathcal{V} = \frac{\partial C_{\mathrm{bin}}}{\partial \sigma} 
-  = -Q\, e^{-rT}\, d_1\,\phi(d_2)}
+  \boxed{\mathcal{V} = \frac{\partial C_{\mathrm{bin}}}{\partial \sigma} = -Qe^{-rT}\frac{d_1}{\sigma}\phi(d_2)}
 \]
 
 \[
@@ -386,8 +390,7 @@ Same as European Call derivation.
 
 \subsection{Vega}
 \[
-  \boxed{\mathcal{V} = \frac{\partial P_{\mathrm{bin}}}{\partial \sigma}
-  = Q\, e^{-rT}\, d_1\,\phi(d_2)}
+  \boxed{\mathcal{V} = \frac{\partial P_{\mathrm{bin}}}{\partial \sigma} = Qe^{-rT}\frac{d_1}{\sigma}\phi(d_2)}
 \]
 
 \[
@@ -397,14 +400,7 @@ Same as European Call derivation.
 
 \subsection{Theta}
 \[
-  \boxed{\Theta = \frac{\partial P_{\mathrm{bin}}}{\partial T}
-  = Q\, e^{-rT}\!\left[
-  -r\,\Phi(-d_2)
-  - \frac{\phi(d_2)}{2T}
-    \left(
-      \frac{\ln(\tfrac{S}{K}) + (r - q - \tfrac{1}{2}\sigma^2)T}{\sigma\sqrt{T}}
-    \right)
-  \right]}
+  \boxed{\Theta = \frac{\partial P_{\mathrm{bin}}}{\partial T} = Q\, e^{-rT}\!\left[-r\,\Phi(-d_2)- \frac{\phi(d_2)}{2T}\left(\frac{\ln(\tfrac{S}{K}) + (r - q - \tfrac{1}{2}\sigma^2)T}{\sigma\sqrt{T}}\right)\right]}
 \]
 
 \[
