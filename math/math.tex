@@ -280,25 +280,33 @@ Same as European Call derivation.
 
 \subsection{Delta}
 \[
-  \boxed{\Delta = \frac{\partial C_{\mathrm{bin}}}{\partial S} 
-  = Q\, e^{-rT}\, \frac{\phi(d_2)}{S\,\sigma\,\sqrt{T}}}
+  \boxed{\Delta = \frac{\partial C_{\mathrm{bin}}}{\partial S} = Qe^{-rT}\frac{\phi(d_2)}{S\sigma\sqrt{T}}}
 \]
 
 \[
   \begin{aligned}
+    \Delta & = \frac{\partial C_{\mathrm{bin}}}{\partial S} = Qe^{-rT}\phi(d_2)\frac{\partial d_2}{\partial S} \\
+           & = Qe^{-rT}\phi(d_2)\frac{1}{S\sigma\sqrt{T}} \\ 
   \end{aligned}
 \]
 
 \subsection{Gamma}
 \[
-  \boxed{\Gamma = \frac{\partial^2 C_{\mathrm{bin}}}{\partial S^2} 
-  = -Q\, e^{-rT}\, \frac{d_1\,\phi(d_2)}{S^2\,\sigma^2\,T}}
+  \boxed{\Gamma = \frac{\partial^2 C_{\mathrm{bin}}}{\partial S^2} = -Qe^{-rT}\frac{d_1\phi(d_2)}{S^2\sigma^2T}}
 \]
 
 \[
-  \begin{aligned}
-  \end{aligned}
+\begin{aligned}
+   \Gamma & = \frac{\partial^2 C}{\partial S^2} = Q e^{-rT}\left(-\phi(d_2)\frac{1}{S^2\sigma\sqrt{T}} + \frac{1}{S\sigma\sqrt{T}} \cdot \frac{\partial \phi(d_2)}{\partial S}\right) \\[6pt]
+          & \textcolor{purple1}{\frac{\partial \phi(d_2)}{\partial S} = \frac{\partial \phi(d_2)}{\partial d_2} \cdot \frac{\partial d_2}{\partial S} = -d_2\phi(d_2)\frac{1}{S\sigma\sqrt{T}}} \\[6pt]
+          & = Q e^{-rT}\left(\frac{1}{S\sigma\sqrt{T}}\left(-d_2\phi(d_2)\frac{1}{S\sigma\sqrt{T}}\right) - \phi(d_2)\frac{1}{S^2\sigma\sqrt{T}}\right) \\[6pt]
+          & = -Q e^{-rT}\frac{1}{S\sigma\sqrt{T}}\left(d_2\phi(d_2)\frac{1}{S\sigma\sqrt{T}} + \phi(d_2)\frac{1}{S}\right) \\[6pt]
+          & = -Q e^{-rT}\frac{\phi(d_2)}{S\sigma\sqrt{T}}\left(\frac{d_2}{S\sigma\sqrt{T}} + \frac{\sigma\sqrt{T}}{S\sigma\sqrt{T}}\right) \\[6pt]
+          & = -Q e^{-rT}\frac{\phi(d_2)}{S^2\sigma^2 T}\left(d_2 + \sigma\sqrt{T}\right) \\[6pt]
+   \Gamma & = -Q e^{-rT}\frac{d_1\phi(d_2)}{S^2\sigma^2 T}
+\end{aligned}
 \]
+
 
 \subsection{Vega}
 \[
@@ -307,37 +315,45 @@ Same as European Call derivation.
 
 \[
   \begin{aligned}
+      \mathcal{V} & = \frac{\partial C}{\partial \sigma} = Q e^{-rT} \phi(d_2) \cdot \frac{\partial d_2}{\partial \sigma} \\[6pt]
+      & = Q e^{-rT} \phi(d_2) \left( \frac{\partial d_1}{\partial \sigma} - \sqrt{T} \right) \\[6pt]
+      & \textcolor{purple1}{\frac{\partial d_1}{\partial \sigma} = -\frac{\ln\!\left(\tfrac{S}{K}\right) + T(r - q)}{\sigma^2 \sqrt{T}} + \tfrac{1}{2}\sqrt{T}} \\[6pt]
+      & = Q e^{-rT} \phi(d_2) \left( -\frac{\ln\!\left(\tfrac{S}{K}\right) + T(r - q)}{\sigma^2 \sqrt{T}} - \tfrac{1}{2}\sqrt{T} \right) \\[6pt]
+      & = -Q e^{-rT} \phi(d_2) \left( \frac{\ln\!\left(\tfrac{S}{K}\right) + T(r - q)}{\sigma^2 \sqrt{T}} + \tfrac{1}{2}\sqrt{T} \right) \\[6pt]
+      & = -Q e^{-rT} \phi(d_2)\underbrace{\left(\frac{\ln\!\left(\tfrac{S}{K}\right) + T(r - q) + \tfrac{1}{2}\sigma^2 T}{\sigma \sqrt{T}}\right)}_{=\,\tfrac{d_1}{\sigma}} \\[6pt]
+      & = -Q e^{-rT} \phi(d_2) \frac{d_1}{\sigma}
   \end{aligned}
 \]
 
 \subsection{Theta}
 \[
-  \boxed{\Theta = \frac{\partial C_{\mathrm{bin}}}{\partial T}
-  = Q\, e^{-rT}\!\left[
-  -r\,\Phi(d_2) 
-  + \frac{\phi(d_2)}{2T}
-    \left(
-      \frac{\ln(\tfrac{S}{K}) + (r - q - \tfrac{1}{2}\sigma^2)T}{\sigma\sqrt{T}}
-    \right)
-  \right]}
+  \boxed{\Theta = \frac{\partial C_{\mathrm{bin}}}{\partial T} = Qe^{-rT}\!\left[-r\Phi(d_2) - \frac{\phi(d_2)}{2T}\left(\frac{\ln(\tfrac{S}{K}) + (r - q - \tfrac{1}{2}\sigma^2)T}{\sigma\sqrt{T}}\right)\right]}
 \]
 
 \[
-  \begin{aligned}
-  \end{aligned}
+\begin{aligned}
+   \Theta & = \frac{\partial C}{\partial T} = Q\left(-r e^{-rT}\Phi(d_2) + \phi(d_2)\frac{\partial d_2}{\partial T} e^{-rT}\right) \\[4pt]
+          & = Q e^{-rT}\left(-r\Phi(d_2) + \phi(d_2)\frac{\partial d_2}{\partial T}\right) \\[4pt]
+          & \textcolor{purple1}{\frac{\partial d_2}{\partial T} = \frac{\partial}{\partial T}\!\left(\frac{\ln\!\left(\tfrac{S}{K}\right) + (r - q + \tfrac{1}{2}\sigma^2)T}{\sigma\sqrt{T}} - \sigma \sqrt{T}\right)} \\[4pt]
+          & \textcolor{purple1}{= -\frac{(\sigma^2 - 2r + 2q)T + 2\ln\!\left(\tfrac{S}{K}\right)}{4\sigma T^{3/2}}} \\[4pt]
+          & = Q e^{-rT}\left(-r\Phi(d_2) + \phi(d_2)\left(-\frac{2\ln\!\left(\tfrac{S}{K}\right) + (-2r + 2q + \sigma^2)T}{4\sigma T^{3/2}}\right)\right) \\[4pt]
+          & = Q e^{-rT}\left(-r\Phi(d_2) + \frac{\phi(d_2)}{2T}\left(-\frac{\ln\!\left(\tfrac{S}{K}\right) + (r - q - \tfrac{1}{2}\sigma^2)T}{\sigma\sqrt{T}}\right)\right) \\[4pt]
+          & = Q e^{-rT}\left(-r\Phi(d_2) - \frac{\phi(d_2)d_2}{2T}\right)
+\end{aligned}
 \]
+
+
 
 \subsection{Rho}
 \[
-  \boxed{\rho = \frac{\partial C_{\mathrm{bin}}}{\partial r}
-  = Q\, e^{-rT}\!\left(
-    -T\,\Phi(d_2)
-    + \frac{\sqrt{T}}{\sigma}\,\phi(d_2)
-  \right)}
+  \boxed{\rho = \frac{\partial C_{\mathrm{bin}}}{\partial r} = Qe^{-rT}\!\left(-T\Phi(d_2) + \frac{\sqrt{T}}{\sigma}\phi(d_2)\right)}
 \]
 
 \[
   \begin{aligned}
+    \rho & = \frac{\partial C_{\mathrm{bin}}}{\partial r} = Q(-Te^{-rT}\Phi(d_2) + e^{-rT}\phi(d_2)\frac{\partial d_2}{\partial r}) \\
+         & = Qe^{-rT}(-T\Phi(d_2) + \phi(d_2)\frac{\sqrt{T}}{\sigma}) \\
+    \rho & = Qe^{-rT}(-T\Phi(d_2) + \frac{\sqrt{T}}{\sigma}\phi(d_2)) \\
   \end{aligned}
 \]
 
@@ -368,59 +384,37 @@ Same as European Call derivation.
 
 \subsection{Delta}
 \[
-  \boxed{\Delta = \frac{\partial P_{\mathrm{bin}}}{\partial S}
-  = -Q\, e^{-rT}\, \frac{\phi(d_2)}{S\,\sigma\,\sqrt{T}}}
+  \boxed{\Delta = \frac{\partial P_{\mathrm{bin}}}{\partial S} = -Q e^{-rT} \frac{\phi(d_2)}{S\sigma\sqrt{T}}}
 \]
 
-\[
-  \begin{aligned}
-  \end{aligned}
-\]
-
+Same derivation as call but negative
 \subsection{Gamma}
 \[
-  \boxed{\Gamma = \frac{\partial^2 P_{\mathrm{bin}}}{\partial S^2}
-  = Q\, e^{-rT}\, \frac{d_1\,\phi(d_2)}{S^2\,\sigma^2\,T}}
+  \boxed{\Gamma = \frac{\partial^2 P_{\mathrm{bin}}}{\partial S^2} = Q e^{-rT}\frac{d_1\phi(d_2)}{S^2\sigma^2\,T}}
 \]
 
-\[
-  \begin{aligned}
-  \end{aligned}
-\]
+Same derivation as call
 
 \subsection{Vega}
 \[
   \boxed{\mathcal{V} = \frac{\partial P_{\mathrm{bin}}}{\partial \sigma} = Qe^{-rT}\frac{d_1}{\sigma}\phi(d_2)}
 \]
 
-\[
-  \begin{aligned}
-  \end{aligned}
-\]
+Same derivation as call
 
 \subsection{Theta}
 \[
-  \boxed{\Theta = \frac{\partial P_{\mathrm{bin}}}{\partial T} = Q\, e^{-rT}\!\left[-r\,\Phi(-d_2)- \frac{\phi(d_2)}{2T}\left(\frac{\ln(\tfrac{S}{K}) + (r - q - \tfrac{1}{2}\sigma^2)T}{\sigma\sqrt{T}}\right)\right]}
+  \boxed{\Theta = \frac{\partial P_{\mathrm{bin}}}{\partial T} = Qe^{-rT}\!\left[-r\Phi(-d_2) + \frac{\phi(d_2)}{2T}\left(\frac{\ln(\tfrac{S}{K}) + (r - q - \tfrac{1}{2}\sigma^2)T}{\sigma\sqrt{T}}\right)\right]}
 \]
 
-\[
-  \begin{aligned}
-  \end{aligned}
-\]
+Nearly identical to call, just $\Phi(-d_2)$ instead of $\Phi(d_2)$ and adding additional term
 
 \subsection{Rho}
 \[
-  \boxed{\rho = \frac{\partial P_{\mathrm{bin}}}{\partial r}
-  = Q\, e^{-rT}\!\left(
-    -T\,\Phi(-d_2)
-    - \frac{\sqrt{T}}{\sigma}\,\phi(d_2)
-  \right)}
+  \boxed{\rho = \frac{\partial P_{\mathrm{bin}}}{\partial r} = Qe^{-rT}\!\left(-T\Phi(-d_2) - \frac{\sqrt{T}}{\sigma}\phi(d_2)\right)}
 \]
 
-\[
-  \begin{aligned}
-  \end{aligned}
-\]
+Nearly identical to call, just $\Phi(-d_2)$ instead of $\Phi(d_2)$ and subtracting additional term
 
 \newpage
 
