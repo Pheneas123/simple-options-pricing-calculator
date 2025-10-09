@@ -12,7 +12,7 @@ https://pheneas123.github.io/simple-options-pricing-calculator/
 
 - **Binary (cash-or-nothing)**  
   - Price: closed-form  
-  - Greeks: finite differences
+  - Greeks: closed-form
 
 - **American options**  
   - Price: CRR binomial with early exercise  
@@ -29,8 +29,7 @@ https://pheneas123.github.io/simple-options-pricing-calculator/
   - Theta uses the market convention (negative of ∂Price/∂T)  
 
 ## Plans
-
-- Add a "Maths" section with step-by-step derivations of the formulas  
+- Finish maths pdf with American options
 - Implement analytical Greek calculations
 - Improve FD mode with confidence intervals
 
