@@ -11,7 +11,6 @@
     <h1>Black–Scholes Calculator</h1>
     <p>Continuous compounding with dividend yield q.</p>
   </header>
-
   <main class="grid">
     <section class="card">
       <h2>Inputs</h2>
@@ -58,85 +57,84 @@
         <input id="T_rng" type="range" min="0.01" max="30.00" value="1" step="0.01">
       </div>
     </section>
-
-    <!-- Outputs -->
-<section class="card">
-  <h2>Outputs</h2>
-  <table class="outputs">
-    <thead>
-      <tr>
-        <th></th>
-        <th>European Call</th>
-        <th>European Put</th>
-        <th>Binary Call (Cash-or-nothing)</th>
-        <th>Binary Put (Cash-or-nothing)</th>
-        <th>American Call</th>
-        <th>American Put</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Price</td>
-        <td id="call_price">Loading…</td>
-        <td id="put_price">Loading…</td>
-        <td id="binC_price">—</td>
-        <td id="binP_price">—</td>
-        <td id="amC_price">—</td>
-        <td id="amP_price">—</td>
-      </tr>
-      <tr>
-        <td>Delta</td>
-        <td id="call_delta">—</td>
-        <td id="put_delta">—</td>
-        <td id="binC_delta">—</td>
-        <td id="binP_delta">—</td>
-        <td id="amC_delta">—</td>
-        <td id="amP_delta">—</td>
-      </tr>
-      <tr>
-        <td>Gamma</td>
-        <td id="call_gamma">—</td>
-        <td id="put_gamma">—</td>
-        <td id="binC_gamma">—</td>
-        <td id="binP_gamma">—</td>
-        <td id="amC_gamma">—</td>
-        <td id="amP_gamma">—</td>
-      </tr>
-      <tr>
-        <td>Vega</td>
-        <td id="call_vega">—</td>
-        <td id="put_vega">—</td>
-        <td id="binC_vega">—</td>
-        <td id="binP_vega">—</td>
-        <td id="amC_vega">—</td>
-        <td id="amP_vega">—</td>
-      </tr>
-      <tr>
-        <td>Theta</td>
-        <td id="call_theta">—</td>
-        <td id="put_theta">—</td>
-        <td id="binC_theta">—</td>
-        <td id="binP_theta">—</td>
-        <td id="amC_theta">—</td>
-        <td id="amP_theta">—</td>
-      </tr>
-      <tr>
-        <td>Rho</td>
-        <td id="call_rho">—</td>
-        <td id="put_rho">—</td>
-        <td id="binC_rho">—</td>
-        <td id="binP_rho">—</td>
-        <td id="amC_rho">—</td>
-        <td id="amP_rho">—</td>
-      </tr>
-    </tbody>
-  </table>
-</section>
-<p style="text-align:center; margin-top:1rem;">
-  <a href="math.pdf" target="_blank" rel="noopener">View Mathematical Derivations (PDF)</a>
-</p>
-
-</main>
+    <section class="card">
+      <h2>Outputs</h2>
+      <table class="outputs">
+        <thead>
+          <tr>
+            <th></th>
+            <th>European Call</th>
+            <th>European Put</th>
+            <th>Binary Call (Cash-or-Nothing)</th>
+            <th>Binary Put (Cash-or-Nothing)</th>
+            <th>American Call</th>
+            <th>American Put</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Price</td>
+            <td id="call_price">Loading…</td>
+            <td id="put_price">Loading…</td>
+            <td id="binC_price">—</td>
+            <td id="binP_price">—</td>
+            <td id="amC_price">—</td>
+            <td id="amP_price">—</td>
+          </tr>
+          <tr>
+            <td>Delta</td>
+            <td id="call_delta">—</td>
+            <td id="put_delta">—</td>
+            <td id="binC_delta">—</td>
+            <td id="binP_delta">—</td>
+            <td id="amC_delta">—</td>
+            <td id="amP_delta">—</td>
+          </tr>
+          <tr>
+            <td>Gamma</td>
+            <td id="call_gamma">—</td>
+            <td id="put_gamma">—</td>
+            <td id="binC_gamma">—</td>
+            <td id="binP_gamma">—</td>
+            <td id="amC_gamma">—</td>
+            <td id="amP_gamma">—</td>
+          </tr>
+          <tr>
+            <td>Vega</td>
+            <td id="call_vega">—</td>
+            <td id="put_vega">—</td>
+            <td id="binC_vega">—</td>
+            <td id="binP_vega">—</td>
+            <td id="amC_vega">—</td>
+            <td id="amP_vega">—</td>
+          </tr>
+          <tr>
+            <td>Theta</td>
+            <td id="call_theta">—</td>
+            <td id="put_theta">—</td>
+            <td id="binC_theta">—</td>
+            <td id="binP_theta">—</td>
+            <td id="amC_theta">—</td>
+            <td id="amP_theta">—</td>
+          </tr>
+          <tr>
+            <td>Rho</td>
+            <td id="call_rho">—</td>
+            <td id="put_rho">—</td>
+            <td id="binC_rho">—</td>
+            <td id="binP_rho">—</td>
+            <td id="amC_rho">—</td>
+            <td id="amP_rho">—</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="text-align:center; margin-top:1rem;">
+        <a href="math.pdf" target="_blank" rel="noopener noreferrer">
+           View Mathematical Derivations (PDF)
+        </a>
+      </p>
+    </section>
+  </main>
   <script src="options.js"></script>
   <script src="app.js"></script>
 </body>
