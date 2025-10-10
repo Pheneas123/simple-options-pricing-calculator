@@ -32,5 +32,3 @@ https://pheneas123.github.io/simple-options-pricing-calculator/
 - Finish maths pdf with American options
 - Implement analytical Greek calculations
 - Improve FD mode with confidence intervals
-
----
