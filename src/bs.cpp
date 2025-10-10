@@ -40,18 +40,6 @@ bs::Result finiteDiffGreeks(PriceFunc price, double S, double K, double r,
   return R;
 }
 
-// Binary (cash-or-nothing) closed-form price
-static inline double priceBinaryCash(bool is_call, double S, double K, double r,
-                                     double q, double sigma, double T,
-                                     double payout) {
-  const double sqrtT = std::sqrt(T);
-  const double d1 =
-      (std::log(S / K) + (r - q + 0.5 * sigma * sigma) * T) / (sigma * sqrtT);
-  const double d2 = d1 - sigma * sqrtT;
-  const double disc = std::exp(-r * T);
-  return payout * disc * (is_call ? bs::normCdf(d2) : bs::normCdf(-d2));
-}
-
 // American option via CRR binomial with early exercise
 static inline double priceAmericanBinomialCore(bool is_call, double S, double K,
                                                double r, double q, double sigma,
@@ -171,7 +159,7 @@ Result binaryCashOrNothing(Type type, double S, double K, double r, double q,
   // Price
   const double price = payout * disc * (isCall ? Nd2 : Nmd2);
 
-  // Greeks (your closed-form results)
+  // Greeks
   // Delta
   const double delta_sign = isCall ? +1.0 : -1.0;
   const double delta = delta_sign * payout * disc * (phi2 / (S * sigmaSqrtT));
