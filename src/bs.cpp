@@ -153,12 +153,57 @@ Result binaryCashOrNothing(Type type, double S, double K, double r, double q,
   if (!(S > 0.0) || !(K > 0.0) || !(sigma > 0.0) || !(T > 0.0)) {
     return {NAN, NAN, NAN, NAN, NAN, NAN};
   }
-  const bool is_call = (type == Type::Call);
-  auto f = [=](double s, double k, double rr, double qq, double vol,
-               double TT) {
-    return priceBinaryCash(is_call, s, k, rr, qq, vol, TT, payout);
-  };
-  return finiteDiffGreeks(f, S, K, r, q, sigma, T);
+
+  const bool isCall = (type == Type::Call);
+
+  const double sqrtT = std::sqrt(T);
+  const double sigmaSqrtT = sigma * sqrtT;
+
+  const double d1 =
+      (std::log(S / K) + (r - q + 0.5 * sigma * sigma) * T) / sigmaSqrtT;
+  const double d2 = d1 - sigmaSqrtT;
+
+  const double disc = std::exp(-r * T);
+  const double Nd2 = bs::normCdf(d2);
+  const double Nmd2 = bs::normCdf(-d2);
+  const double phi2 = bs::normPdf(d2);
+
+  // Price
+  const double price = payout * disc * (isCall ? Nd2 : Nmd2);
+
+  // Greeks (your closed-form results)
+  // Delta
+  const double delta_sign = isCall ? +1.0 : -1.0;
+  const double delta = delta_sign * payout * disc * (phi2 / (S * sigmaSqrtT));
+
+  // Gamma
+  // Call:  -Q e^{-rT} d1 phi(d2) / (S^2 sigma^2 T)
+  // Put :  +Q e^{-rT} d1 phi(d2) / (S^2 sigma^2 T)
+  const double gamma_sign = isCall ? -1.0 : +1.0;
+  const double gamma =
+      gamma_sign * payout * disc * (d1 * phi2) / (S * S * sigma * sigma * T);
+
+  // Vega
+  // Call: -Q e^{-rT} (d1/sigma) phi(d2)
+  // Put : +Q e^{-rT} (d1/sigma) phi(d2)
+  const double vega_sign = isCall ? -1.0 : +1.0;
+  const double vega = vega_sign * payout * disc * (d1 * phi2 / sigma);
+
+  // Theta
+  // Call:  Q e^{-rT} [ -r Phi(d2) - (phi(d2) * d2) / (2T) ]
+  // Put :  Q e^{-rT} [ -r Phi(-d2) + (phi(d2) * d2) / (2T) ]
+  const double theta = payout * disc *
+                       (isCall ? (-r * Nd2 - (phi2 * d2) / (2.0 * T))
+                               : (-r * Nmd2 + (phi2 * d2) / (2.0 * T)));
+
+  // Rho
+  // Call:  Q e^{-rT} [ -T Phi(d2) + (sqrt(T)/sigma) phi(d2) ]
+  // Put :  Q e^{-rT} [ -T Phi(-d2) - (sqrt(T)/sigma) phi(d2) ]
+  const double rho = payout * disc *
+                     (isCall ? (-T * Nd2 + (sqrtT / sigma) * phi2)
+                             : (-T * Nmd2 - (sqrtT / sigma) * phi2));
+
+  return {price, delta, gamma, vega, theta, rho};
 }
 
 // American option
