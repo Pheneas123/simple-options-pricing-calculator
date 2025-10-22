@@ -20,15 +20,6 @@ https://pheneas123.github.io/simple-options-pricing-calculator/
 
 - Handles dividend yield `q` and continuous compounding.
 
-## Calculations
-
-- For European vanillas, formulas are straight from Black–Scholes.  
-- For binaries and Americans, Greeks are estimated with finite differences:  
-  - Central differences for Delta, Vega, Rho  
-  - Second-order stencil for Gamma  
-  - Theta uses the market convention (negative of ∂Price/∂T)  
-
 ## Plans
 - Finish maths pdf with American options
-- Implement analytical Greek calculations
 - Improve FD mode with confidence intervals
