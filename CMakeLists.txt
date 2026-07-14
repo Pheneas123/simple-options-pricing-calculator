@@ -9,13 +9,18 @@ add_library(core STATIC
 )
 target_include_directories(core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-add_executable(options
-  wasm/bindings.cpp
-)
-target_link_libraries(options PRIVATE core)
-target_include_directories(options PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+include(CTest)
+if(BUILD_TESTING AND NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+  add_executable(core_tests tests/bs_tests.cpp)
+  target_link_libraries(core_tests PRIVATE core)
+  add_test(NAME core_tests COMMAND core_tests)
+endif()
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+  add_executable(options wasm/bindings.cpp)
+  target_link_libraries(options PRIVATE core)
+  target_include_directories(options PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
   target_compile_options(options PRIVATE
     -O3
     -sWASM=1

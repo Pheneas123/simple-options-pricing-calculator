@@ -1,139 +1,98 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Black–Scholes</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Interactive option pricing and Greeks calculator">
+  <title>Option Lab — Pricing & Greeks</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>Black–Scholes Calculator</h1>
+  <header class="site-header">
+    <a class="brand" href="#">Options Calculator</a>
+    <a class="math-link" href="math.pdf" target="_blank" rel="noopener noreferrer">PDF of the maths used <span>↗</span></a>
   </header>
-  <main class="grid">
-    <section class="card">
-      <h2>Inputs</h2>
 
-      <div class="row">
-        <label>S (spot)
-          <input id="S_num" type="number" value="100" step="0.01">
-        </label>
-        <input id="S_rng" type="range" min="1" max="1000" value="100" step="1">
-      </div>
+  <main>
+    <section class="workspace">
+      <aside class="panel inputs-panel">
+        <div class="panel-heading">
+          <div><p class="section-number">01</p><h2>Market inputs</h2></div>
+          <button id="reset_btn" class="text-button" type="button">Reset</button>
+        </div>
 
-      <div class="row">
-        <label>K (strike)
-          <input id="K_num" type="number" value="100" step="0.01">
-        </label>
-        <input id="K_rng" type="range" min="1" max="1000" value="100" step="1">
-      </div>
+        <div class="control">
+          <div class="control-head"><label for="S_num">Spot price <span>S</span></label><div class="number-wrap"><span>$</span><input id="S_num" type="number" value="100" step="1" aria-label="Spot price"></div></div>
+          <input id="S_rng" type="range" min="1" max="1000" value="100" step="1">
+          <div class="range-labels"><span>$1</span><span>$1,000</span></div>
+        </div>
 
-      <div class="row">
-        <label>r (interest)
-          <input id="r_num" type="number" value="0.05" step="0.0001">
-        </label>
-        <input id="r_rng" type="range" min="-0.05" max="0.25" value="0.05" step="0.0001">
-      </div>
+        <div class="control">
+          <div class="control-head"><label for="K_num">Strike price <span>K</span></label><div class="number-wrap"><span>$</span><input id="K_num" type="number" value="100" step="1" aria-label="Strike price"></div></div>
+          <input id="K_rng" type="range" min="1" max="1000" value="100" step="1">
+          <div class="range-labels"><span>$1</span><span>$1,000</span></div>
+        </div>
 
-      <div class="row">
-        <label>q (dividend rate)
-          <input id="q_num" type="number" value="0.00" step="0.0001">
-        </label>
-        <input id="q_rng" type="range" min="0.00" max="0.15" value="0.00" step="0.0001">
-      </div>
+        <div class="control-grid">
+          <div class="control compact">
+            <div class="control-head"><label for="r_num">Risk-free rate <span>r</span></label><div class="number-wrap suffix"><input id="r_num" type="number" value="0.05" step="0.0001"><span>dec.</span></div></div>
+            <input id="r_rng" type="range" min="-0.05" max="0.25" value="0.05" step="0.0001">
+          </div>
+          <div class="control compact">
+            <div class="control-head"><label for="q_num">Dividend yield <span>q</span></label><div class="number-wrap suffix"><input id="q_num" type="number" value="0" step="0.0001"><span>dec.</span></div></div>
+            <input id="q_rng" type="range" min="0" max="0.15" value="0" step="0.0001">
+          </div>
+          <div class="control compact">
+            <div class="control-head"><label for="sigma_num">Volatility <span>σ</span></label><div class="number-wrap suffix"><input id="sigma_num" type="number" value="0.2" step="0.0001"><span>dec.</span></div></div>
+            <input id="sigma_rng" type="range" min="0.01" max="1.5" value="0.2" step="0.0001">
+          </div>
+          <div class="control compact">
+            <div class="control-head"><label for="T_num">Time to expiry <span>T</span></label><div class="number-wrap suffix"><input id="T_num" type="number" value="1" step="0.01"><span>yr</span></div></div>
+            <input id="T_rng" type="range" min="0.01" max="30" value="1" step="0.01">
+          </div>
+        </div>
+        <p id="input_error" class="input-error" role="alert"></p>
+      </aside>
 
-      <div class="row">
-        <label>sigma (volatility)
-          <input id="sigma_num" type="number" value="0.10" step="0.0001">
-        </label>
-        <input id="sigma_rng" type="range" min="0.01" max="1.50" value="0.20" step="0.0001">
-      </div>
-
-      <div class="row">
-        <label>T (years to maturity)
-          <input id="T_num" type="number" value="1" step="0.01">
-        </label>
-        <input id="T_rng" type="range" min="0.01" max="30.00" value="1" step="0.01">
-      </div>
+      <section class="panel results-panel">
+        <div class="panel-heading">
+          <div><p class="section-number">02</p><h2>Model results</h2></div>
+          <p class="units-note">Vega & rho per 1.00 · theta per year</p>
+        </div>
+        <div class="table-wrap">
+          <table class="outputs">
+            <thead><tr><th>Metric</th><th>European Call</th><th>European Put</th><th>Binary Call</th><th>Binary Put</th><th>American Call</th><th>American Put</th></tr></thead>
+            <tbody>
+              <tr class="price-row"><th>Price</th><td id="call_price">—</td><td id="put_price">—</td><td id="binC_price">—</td><td id="binP_price">—</td><td id="amC_price">—</td><td id="amP_price">—</td></tr>
+              <tr><th>Delta <span>Δ</span></th><td id="call_delta">—</td><td id="put_delta">—</td><td id="binC_delta">—</td><td id="binP_delta">—</td><td id="amC_delta">—</td><td id="amP_delta">—</td></tr>
+              <tr><th>Gamma <span>Γ</span></th><td id="call_gamma">—</td><td id="put_gamma">—</td><td id="binC_gamma">—</td><td id="binP_gamma">—</td><td id="amC_gamma">—</td><td id="amP_gamma">—</td></tr>
+              <tr><th>Vega <span>ν</span></th><td id="call_vega">—</td><td id="put_vega">—</td><td id="binC_vega">—</td><td id="binP_vega">—</td><td id="amC_vega">—</td><td id="amP_vega">—</td></tr>
+              <tr><th>Theta <span>Θ</span></th><td id="call_theta">—</td><td id="put_theta">—</td><td id="binC_theta">—</td><td id="binP_theta">—</td><td id="amC_theta">—</td><td id="amP_theta">—</td></tr>
+              <tr><th>Rho <span>ρ</span></th><td id="call_rho">—</td><td id="put_rho">—</td><td id="binC_rho">—</td><td id="binP_rho">—</td><td id="amC_rho">—</td><td id="amP_rho">—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
     </section>
-    <section class="card">
-      <h2>Outputs</h2>
-      <table class="outputs">
-        <thead>
-          <tr>
-            <th></th>
-            <th>European Call</th>
-            <th>European Put</th>
-            <th>Binary Call (Cash-or-Nothing)</th>
-            <th>Binary Put (Cash-or-Nothing)</th>
-            <th>American Call</th>
-            <th>American Put</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Price</td>
-            <td id="call_price">Loading…</td>
-            <td id="put_price">Loading…</td>
-            <td id="binC_price">—</td>
-            <td id="binP_price">—</td>
-            <td id="amC_price">—</td>
-            <td id="amP_price">—</td>
-          </tr>
-          <tr>
-            <td>Delta</td>
-            <td id="call_delta">—</td>
-            <td id="put_delta">—</td>
-            <td id="binC_delta">—</td>
-            <td id="binP_delta">—</td>
-            <td id="amC_delta">—</td>
-            <td id="amP_delta">—</td>
-          </tr>
-          <tr>
-            <td>Gamma</td>
-            <td id="call_gamma">—</td>
-            <td id="put_gamma">—</td>
-            <td id="binC_gamma">—</td>
-            <td id="binP_gamma">—</td>
-            <td id="amC_gamma">—</td>
-            <td id="amP_gamma">—</td>
-          </tr>
-          <tr>
-            <td>Vega</td>
-            <td id="call_vega">—</td>
-            <td id="put_vega">—</td>
-            <td id="binC_vega">—</td>
-            <td id="binP_vega">—</td>
-            <td id="amC_vega">—</td>
-            <td id="amP_vega">—</td>
-          </tr>
-          <tr>
-            <td>Theta</td>
-            <td id="call_theta">—</td>
-            <td id="put_theta">—</td>
-            <td id="binC_theta">—</td>
-            <td id="binP_theta">—</td>
-            <td id="amC_theta">—</td>
-            <td id="amP_theta">—</td>
-          </tr>
-          <tr>
-            <td>Rho</td>
-            <td id="call_rho">—</td>
-            <td id="put_rho">—</td>
-            <td id="binC_rho">—</td>
-            <td id="binP_rho">—</td>
-            <td id="amC_rho">—</td>
-            <td id="amP_rho">—</td>
-          </tr>
-        </tbody>
-      </table>
-      <p style="text-align:center; margin-top:1rem;">
-        <a href="math.pdf" target="_blank" rel="noopener noreferrer">
-           View Mathematical Derivations (PDF)
-        </a>
-      </p>
+
+    <section class="visuals-section">
+      <div class="section-intro"><div><p class="section-number">03</p><h2>Explore the surface</h2></div><p>Move beyond a single point estimate. The views below update with your market inputs.</p></div>
+      <div class="visual-grid">
+        <article class="panel visual-card">
+          <div class="visual-head"><div><h3>Value across spot</h3><p>Model value and expiry payoff</p></div><div class="select-group"><select id="curve_model" aria-label="Curve model"><option value="european">European</option><option value="american">American</option></select><select id="curve_type" aria-label="Option type"><option value="call">Call</option><option value="put">Put</option></select></div></div>
+          <div class="chart-legend"><span><i class="line-value"></i>Model value</span><span><i class="line-payoff"></i>Expiry payoff</span><span><i class="line-spot"></i>Current spot</span></div>
+          <div class="canvas-wrap"><canvas id="value_chart" aria-label="Option value across spot prices"></canvas></div>
+        </article>
+        <article class="panel visual-card">
+          <div class="visual-head"><div><h3>Price sensitivity</h3><p>European value by spot and volatility</p></div><select id="heatmap_type" aria-label="Heatmap option type"><option value="call">Call</option><option value="put">Put</option></select></div>
+          <div class="heatmap-scale"><span>Lower</span><i></i><span>Higher</span></div>
+          <div class="canvas-wrap"><canvas id="price_heatmap" aria-label="Option price heatmap"></canvas></div>
+        </article>
+      </div>
     </section>
   </main>
+
+  <footer><a href="https://github.com/Pheneas123/simple-options-pricing-calculator" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a></footer>
   <script src="options.js"></script>
   <script src="app.js"></script>
 </body>

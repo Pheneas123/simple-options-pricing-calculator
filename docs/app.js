@@ -1,121 +1,248 @@
-// docs/app.js
-let Module = null; // Emscripten module instance
-const READY = { wasm: false }; // track readiness
+let Module = null;
+let timer;
 
-function $(id){ return document.getElementById(id); }
-function to6(x){ return Number.isFinite(x) ? x.toFixed(6) : "—"; }
+const $ = id => document.getElementById(id);
+const outputPrefixes = ["call", "put", "binC", "binP", "amC", "amP"];
+const defaults = { S: 100, K: 100, r: 0.05, q: 0, sigma: 0.2, T: 1 };
 
-function setErr(msg){
-  // European
-  const ids = [
-    "call_price","put_price","call_delta","put_delta","call_gamma","put_gamma",
-    "call_vega","put_vega","call_theta","put_theta","call_rho","put_rho",
-    // Binary
-    "binC_price","binP_price","binC_delta","binP_delta","binC_gamma","binP_gamma",
-    "binC_vega","binP_vega","binC_theta","binP_theta","binC_rho","binP_rho",
-    // American
-    "amC_price","amP_price","amC_delta","amP_delta","amC_gamma","amP_gamma",
-    "amC_vega","amP_vega","amC_theta","amP_theta","amC_rho","amP_rho",
-  ];
-  ids.forEach(i => { const el = $(i); if (el) el.textContent = msg; });
+function formatNumber(value) {
+  if (!Number.isFinite(value)) return "—";
+  const magnitude = Math.abs(value);
+  if (magnitude !== 0 && magnitude < 0.0001) return value.toExponential(3);
+  return value.toFixed(magnitude >= 100 ? 3 : 5);
 }
 
-async function loadWasm(){
-  try {
-    if (typeof createModule !== "function") {
-      throw new Error("options.js (createModule) not found. Check script tag order/paths.");
-    }
-    Module = await createModule();   // provided by options.js
-    READY.wasm = true;
-    compute(); // run once when ready
-  } catch (err) {
-    console.error(err);
-    setErr("WASM load failed (see console)");
-  }
+function setOutputs(message) {
+  outputPrefixes.forEach(prefix => {
+    ["price", "delta", "gamma", "vega", "theta", "rho"].forEach(metric => {
+      $(`${prefix}_${metric}`).textContent = message;
+    });
+  });
 }
 
-function syncPair(numId, rngId, min, max, step){
-  const n = $(numId), r = $(rngId);
-  r.min = min; r.max = max; r.step = step; n.step = step;
+function syncPair(numId, rangeId, min, max, step) {
+  const number = $(numId);
+  const range = $(rangeId);
+  Object.assign(range, { min, max, step });
+  number.step = step;
 
-  // keep initial values in sync
-  if (n.value !== "") r.value = Math.min(+max, Math.max(+min, +n.value));
-  else n.value = r.value;
+  const updateFill = () => {
+    const percent = ((Number(range.value) - min) / (max - min)) * 100;
+    range.style.background = `linear-gradient(90deg, var(--accent) ${percent}%, var(--border) ${percent}%)`;
+  };
 
-  const clamp = v => Math.min(+max, Math.max(+min, +v));
-  n.addEventListener('input', () => { r.value = clamp(n.value); compute(); });
-  r.addEventListener('input', () => { n.value = r.value; compute(); });
+  range.value = Math.min(max, Math.max(min, Number(number.value)));
+  updateFill();
+  number.addEventListener("input", () => {
+    range.value = Math.min(max, Math.max(min, Number(number.value)));
+    updateFill();
+    compute();
+  });
+  range.addEventListener("input", () => {
+    number.value = range.value;
+    updateFill();
+    compute();
+  });
 }
 
-function readState(){
+function readState() {
   return {
-    S: parseFloat($('S_num').value),
-    K: parseFloat($('K_num').value),
-    r: parseFloat($('r_num').value),
-    q: parseFloat($('q_num').value),
-    sigma: parseFloat($('sigma_num').value),
-    T: parseFloat($('T_num').value),
+    S: Number($("S_num").value),
+    K: Number($("K_num").value),
+    r: Number($("r_num").value),
+    q: Number($("q_num").value),
+    sigma: Number($("sigma_num").value),
+    T: Number($("T_num").value)
   };
 }
 
-function render(prefix, res){
-  $(`${prefix}_price`).textContent = to6(res.price);
-  $(`${prefix}_delta`).textContent = to6(res.delta);
-  $(`${prefix}_gamma`).textContent = to6(res.gamma);
-  $(`${prefix}_vega`).textContent  = to6(res.vega);
-  $(`${prefix}_theta`).textContent = to6(res.theta);
-  $(`${prefix}_rho`).textContent   = to6(res.rho);
+function validate(state) {
+  if (![state.S, state.K, state.r, state.q, state.sigma, state.T].every(Number.isFinite)) return "Enter a number in every field.";
+  if (state.S <= 0 || state.K <= 0) return "Spot and strike must be greater than zero.";
+  if (state.sigma <= 0 || state.T <= 0) return "Volatility and time must be greater than zero.";
+  return "";
 }
 
-let timer;
-function compute(){
-  if (!READY.wasm || !Module || !Module.black_scholes) return;
+function render(prefix, result) {
+  ["price", "delta", "gamma", "vega", "theta", "rho"].forEach(metric => {
+    $(`${prefix}_${metric}`).textContent = formatNumber(result[metric]);
+  });
+}
 
+function optionType(value) {
+  return value === "call" ? Module.Type.Call : Module.Type.Put;
+}
+
+function resizeCanvas(canvas) {
+  const ratio = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const width = Math.max(1, Math.round(rect.width * ratio));
+  const height = Math.max(1, Math.round(rect.height * ratio));
+  if (canvas.width !== width || canvas.height !== height) {
+    canvas.width = width;
+    canvas.height = height;
+  }
+  const context = canvas.getContext("2d");
+  context.setTransform(ratio, 0, 0, ratio, 0, 0);
+  return { context, width: rect.width, height: rect.height };
+}
+
+function drawValueChart(state) {
+  const canvas = $("value_chart");
+  const { context: ctx, width, height } = resizeCanvas(canvas);
+  const padding = { top: 12, right: 14, bottom: 34, left: 48 };
+  const innerWidth = width - padding.left - padding.right;
+  const innerHeight = height - padding.top - padding.bottom;
+  const isCall = $("curve_type").value === "call";
+  const model = $("curve_model").value;
+  const type = optionType(isCall ? "call" : "put");
+  const minSpot = Math.max(0.01, Math.min(state.S, state.K) * 0.45);
+  const maxSpot = Math.max(state.S, state.K) * 1.55;
+  const points = 40;
+  const values = [];
+
+  for (let i = 0; i <= points; i++) {
+    const spot = minSpot + (maxSpot - minSpot) * i / points;
+    const result = model === "american"
+      ? Module.american_option(type, spot, state.K, state.r, state.q, state.sigma, state.T, 100)
+      : Module.black_scholes(type, spot, state.K, state.r, state.q, state.sigma, state.T);
+    values.push({ spot, value: result.price, payoff: isCall ? Math.max(spot - state.K, 0) : Math.max(state.K - spot, 0) });
+  }
+
+  const maxValue = Math.max(1, ...values.flatMap(point => [point.value, point.payoff])) * 1.12;
+  const x = spot => padding.left + (spot - minSpot) / (maxSpot - minSpot) * innerWidth;
+  const y = value => padding.top + innerHeight - value / maxValue * innerHeight;
+  ctx.clearRect(0, 0, width, height);
+  ctx.font = "9px DM Mono";
+  ctx.fillStyle = "#697384";
+  ctx.strokeStyle = "#252d3a";
+  ctx.lineWidth = 1;
+
+  for (let i = 0; i <= 4; i++) {
+    const value = maxValue * i / 4;
+    const py = y(value);
+    ctx.beginPath(); ctx.moveTo(padding.left, py); ctx.lineTo(width - padding.right, py); ctx.stroke();
+    ctx.textAlign = "right"; ctx.fillText(value.toFixed(value >= 10 ? 0 : 1), padding.left - 8, py + 3);
+  }
+  for (let i = 0; i <= 4; i++) {
+    const spot = minSpot + (maxSpot - minSpot) * i / 4;
+    ctx.textAlign = "center"; ctx.fillText(spot.toFixed(0), x(spot), height - 8);
+  }
+
+  ctx.save();
+  ctx.setLineDash([4, 5]);
+  ctx.strokeStyle = "#778193";
+  ctx.beginPath(); values.forEach((point, i) => i ? ctx.lineTo(x(point.spot), y(point.payoff)) : ctx.moveTo(x(point.spot), y(point.payoff))); ctx.stroke();
+  ctx.strokeStyle = "#ffad66";
+  ctx.beginPath(); ctx.moveTo(x(state.S), padding.top); ctx.lineTo(x(state.S), padding.top + innerHeight); ctx.stroke();
+  ctx.restore();
+
+  const gradient = ctx.createLinearGradient(0, padding.top, 0, padding.top + innerHeight);
+  gradient.addColorStop(0, "rgba(85,230,165,.2)"); gradient.addColorStop(1, "rgba(85,230,165,0)");
+  ctx.beginPath(); values.forEach((point, i) => i ? ctx.lineTo(x(point.spot), y(point.value)) : ctx.moveTo(x(point.spot), y(point.value)));
+  ctx.lineTo(x(maxSpot), y(0)); ctx.lineTo(x(minSpot), y(0)); ctx.closePath(); ctx.fillStyle = gradient; ctx.fill();
+  ctx.beginPath(); values.forEach((point, i) => i ? ctx.lineTo(x(point.spot), y(point.value)) : ctx.moveTo(x(point.spot), y(point.value)));
+  ctx.strokeStyle = "#55e6a5"; ctx.lineWidth = 2; ctx.stroke();
+}
+
+function heatColor(value, min, max) {
+  const t = max === min ? 0.5 : (value - min) / (max - min);
+  const colors = [[18, 27, 38], [20, 113, 106], [85, 230, 165]];
+  const scaled = t * 2;
+  const index = Math.min(1, Math.floor(scaled));
+  const local = scaled - index;
+  return `rgb(${colors[index].map((channel, i) => Math.round(channel + (colors[index + 1][i] - channel) * local)).join(",")})`;
+}
+
+function drawHeatmap(state) {
+  const canvas = $("price_heatmap");
+  const { context: ctx, width, height } = resizeCanvas(canvas);
+  const padding = { top: 8, right: 16, bottom: 38, left: 48 };
+  const cols = 15, rows = 11;
+  const cellWidth = (width - padding.left - padding.right) / cols;
+  const cellHeight = (height - padding.top - padding.bottom) / rows;
+  const minSpot = Math.max(0.01, state.S * 0.65);
+  const maxSpot = state.S * 1.35;
+  const minVol = Math.max(0.01, state.sigma * 0.45);
+  const maxVol = Math.min(2, Math.max(minVol + 0.05, state.sigma * 1.65));
+  const type = optionType($("heatmap_type").value);
+  const cells = [];
+
+  for (let row = 0; row < rows; row++) {
+    const vol = maxVol - (maxVol - minVol) * row / (rows - 1);
+    for (let col = 0; col < cols; col++) {
+      const spot = minSpot + (maxSpot - minSpot) * col / (cols - 1);
+      cells.push({ row, col, value: Module.black_scholes(type, spot, state.K, state.r, state.q, vol, state.T).price });
+    }
+  }
+  const values = cells.map(cell => cell.value);
+  const min = Math.min(...values), max = Math.max(...values);
+  ctx.clearRect(0, 0, width, height);
+  cells.forEach(cell => {
+    ctx.fillStyle = heatColor(cell.value, min, max);
+    ctx.fillRect(padding.left + cell.col * cellWidth, padding.top + cell.row * cellHeight, cellWidth + .5, cellHeight + .5);
+  });
+  ctx.font = "9px DM Mono"; ctx.fillStyle = "#697384";
+  ctx.textAlign = "right"; ctx.fillText(`${(maxVol * 100).toFixed(0)}%`, padding.left - 7, padding.top + 8); ctx.fillText(`${(minVol * 100).toFixed(0)}%`, padding.left - 7, padding.top + rows * cellHeight);
+  ctx.textAlign = "center"; ctx.fillText(minSpot.toFixed(0), padding.left, height - 10); ctx.fillText("Spot price", padding.left + cols * cellWidth / 2, height - 10); ctx.fillText(maxSpot.toFixed(0), padding.left + cols * cellWidth, height - 10);
+  ctx.save(); ctx.translate(12, padding.top + rows * cellHeight / 2); ctx.rotate(-Math.PI / 2); ctx.fillText("Volatility", 0, 0); ctx.restore();
+
+  const currentX = padding.left + (state.S - minSpot) / (maxSpot - minSpot) * cols * cellWidth;
+  const currentY = padding.top + (maxVol - state.sigma) / (maxVol - minVol) * rows * cellHeight;
+  ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 1.5; ctx.strokeRect(currentX - cellWidth / 2, currentY - cellHeight / 2, cellWidth, cellHeight);
+}
+
+function compute() {
+  if (!Module) return;
   clearTimeout(timer);
   timer = setTimeout(() => {
-    const s = readState();
-    if (!(s.S>0 && s.K>0 && s.sigma>0 && s.T>0)) return;
+    const state = readState();
+    const error = validate(state);
+    $("input_error").textContent = error;
+    if (error) { setOutputs("—"); return; }
 
     try {
-      // European 
-      const callRes = Module.black_scholes(Module.Type.Call, s.S, s.K, s.r, s.q, s.sigma, s.T);
-      const putRes  = Module.black_scholes(Module.Type.Put,  s.S, s.K, s.r, s.q, s.sigma, s.T);
-      render('call', callRes);
-      render('put',  putRes);
-
-
-      // Binary cash-or-nothing (payout fixed at 1.0 here)
-      const payout = 1.0;
-      const binC = Module.binary_cash_or_nothing(Module.Type.Call, s.S, s.K, s.r, s.q, s.sigma, s.T, payout);
-      const binP = Module.binary_cash_or_nothing(Module.Type.Put,  s.S, s.K, s.r, s.q, s.sigma, s.T, payout);
-      render('binC', binC);
-      render('binP', binP);
-
-      // American (CRR)
-      const steps = 300;
-      const amC = Module.american_option(Module.Type.Call, s.S, s.K, s.r, s.q, s.sigma, s.T, steps);
-      const amP = Module.american_option(Module.Type.Put,  s.S, s.K, s.r, s.q, s.sigma, s.T, steps);
-      render('amC', amC);
-      render('amP', amP);
-
-    } catch (e) {
-      console.error(e);
-      setErr("Compute error (see console)");
+      render("call", Module.black_scholes(Module.Type.Call, state.S, state.K, state.r, state.q, state.sigma, state.T));
+      render("put", Module.black_scholes(Module.Type.Put, state.S, state.K, state.r, state.q, state.sigma, state.T));
+      render("binC", Module.binary_cash_or_nothing(Module.Type.Call, state.S, state.K, state.r, state.q, state.sigma, state.T, 1));
+      render("binP", Module.binary_cash_or_nothing(Module.Type.Put, state.S, state.K, state.r, state.q, state.sigma, state.T, 1));
+      render("amC", Module.american_option(Module.Type.Call, state.S, state.K, state.r, state.q, state.sigma, state.T, 300));
+      render("amP", Module.american_option(Module.Type.Put, state.S, state.K, state.r, state.q, state.sigma, state.T, 300));
+      drawValueChart(state);
+      drawHeatmap(state);
+    } catch (error) {
+      console.error(error);
+      setOutputs("Error");
     }
-  }, 50);
+  }, 70);
 }
 
-(function init(){
-  // Initial placeholders
-  $('call_price').textContent = 'Loading…';
-  $('put_price').textContent  = 'Loading…';
+function resetInputs() {
+  Object.entries(defaults).forEach(([key, value]) => {
+    $(`${key}_num`).value = value;
+    $(`${key}_rng`).value = value;
+    $(`${key}_rng`).dispatchEvent(new Event("input"));
+  });
+}
 
-  syncPair('S_num','S_rng',1,1000,1);
-  syncPair('K_num','K_rng',1,1000,1);
-  syncPair('r_num','r_rng',-0.05,0.25,0.0001);
-  syncPair('q_num','q_rng',0.00,0.15,0.0001);
-  syncPair('sigma_num','sigma_rng',0.01,1.50,0.0001);
-  syncPair('T_num','T_rng',0.01,30.00,0.01);
+async function init() {
+  syncPair("S_num", "S_rng", 1, 1000, 1);
+  syncPair("K_num", "K_rng", 1, 1000, 1);
+  syncPair("r_num", "r_rng", -0.05, 0.25, 0.0001);
+  syncPair("q_num", "q_rng", 0, 0.15, 0.0001);
+  syncPair("sigma_num", "sigma_rng", 0.01, 1.5, 0.0001);
+  syncPair("T_num", "T_rng", 0.01, 30, 0.01);
+  $("reset_btn").addEventListener("click", resetInputs);
+  ["curve_model", "curve_type", "heatmap_type"].forEach(id => $(id).addEventListener("change", compute));
+  window.addEventListener("resize", compute);
 
-  loadWasm();
-})();
+  try {
+    Module = await createModule();
+    compute();
+  } catch (error) {
+    console.error(error);
+    setOutputs("Unavailable");
+  }
+}
+
+init();

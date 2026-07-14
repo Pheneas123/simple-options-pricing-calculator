@@ -36,7 +36,7 @@ bs::Result finiteDiffGreeks(PriceFunc price, double S, double K, double r,
   R.gamma = (PSu - 2.0 * P0 + PSd) / (h.hS * h.hS);
   R.vega = (Pvup - Pvdo) / (2.0 * h.hsigma);
   R.rho = (Prup - Prdo) / (2.0 * h.hr);
-  R.theta = -(Ptup - Ptdo) / (2.0 * h.hT);
+  R.theta = -(Ptup - Ptdo) / ((T + h.hT) - Tm);
   return R;
 }
 
@@ -53,6 +53,8 @@ static inline double priceAmericanBinomialCore(bool is_call, double S, double K,
   const double disc = std::exp(-r * dt);
   const double a = std::exp((r - q) * dt);
   const double p = (a - d) / (u - d);
+  if (!std::isfinite(p) || p < 0.0 || p > 1.0)
+    return NAN;
 
   // stock prices at maturity
   std::vector<double> ST(steps + 1);
@@ -77,6 +79,49 @@ static inline double priceAmericanBinomialCore(bool is_call, double S, double K,
     }
   }
   return V[0];
+}
+
+static inline double priceAmericanBinomial(bool is_call, double S, double K,
+                                           double r, double q, double sigma,
+                                           double T, int steps) {
+  const double a = priceAmericanBinomialCore(is_call, S, K, r, q, sigma, T,
+                                              steps);
+  const double b = priceAmericanBinomialCore(is_call, S, K, r, q, sigma, T,
+                                              steps + 1);
+  if (!std::isfinite(a) || !std::isfinite(b))
+    return NAN;
+  const double intrinsic =
+      is_call ? std::max(S - K, 0.0) : std::max(K - S, 0.0);
+  return std::max(intrinsic, 0.5 * (a + b));
+}
+
+static bs::Result americanFiniteDiffGreeks(bool is_call, double S, double K,
+                                           double r, double q, double sigma,
+                                           double T, int steps) {
+  auto price = [=](double s, double rr, double vol, double time) {
+    return priceAmericanBinomial(is_call, s, K, rr, q, vol, time, steps);
+  };
+
+  const double hS = std::max(1e-4, 0.005 * S);
+  const double hVol = std::min(0.001, 0.5 * sigma);
+  const double hR = 0.0001;
+  const double hT = std::min(1.0 / 365.0, 0.5 * T);
+  const double p0 = price(S, r, sigma, T);
+  const double pSu = price(S + hS, r, sigma, T);
+  const double pSd = price(S - hS, r, sigma, T);
+  const double pVu = price(S, r, sigma + hVol, T);
+  const double pVd = price(S, r, sigma - hVol, T);
+  const double pRu = price(S, r + hR, sigma, T);
+  const double pRd = price(S, r - hR, sigma, T);
+  const double pTu = price(S, r, sigma, T + hT);
+  const double pTd = price(S, r, sigma, T - hT);
+
+  return {p0,
+          (pSu - pSd) / (2.0 * hS),
+          (pSu - 2.0 * p0 + pSd) / (hS * hS),
+          (pVu - pVd) / (2.0 * hVol),
+          -(pTu - pTd) / (2.0 * hT),
+          (pRu - pRd) / (2.0 * hR)};
 }
 
 } // namespace
@@ -177,12 +222,11 @@ Result binaryCashOrNothing(Type type, double S, double K, double r, double q,
   const double vega_sign = isCall ? -1.0 : +1.0;
   const double vega = vega_sign * payout * disc * (d1 * phi2 / sigma);
 
-  // Theta
-  // Call:  Q e^{-rT} [ -r Phi(d2) - (phi(d2) * d2) / (2T) ]
-  // Put :  Q e^{-rT} [ -r Phi(-d2) + (phi(d2) * d2) / (2T) ]
-  const double theta = payout * disc *
-                       (isCall ? (-r * Nd2 - (phi2 * d2) / (2.0 * T))
-                               : (-r * Nmd2 + (phi2 * d2) / (2.0 * T)));
+  const double d2T =
+      (r - q - 0.5 * sigma * sigma) / (sigma * sqrtT) - d2 / (2.0 * T);
+  const double theta =
+      payout * disc *
+      (isCall ? (r * Nd2 - phi2 * d2T) : (r * Nmd2 + phi2 * d2T));
 
   // Rho
   // Call:  Q e^{-rT} [ -T Phi(d2) + (sqrt(T)/sigma) phi(d2) ]
@@ -200,12 +244,8 @@ Result americanOption(Type type, double S, double K, double r, double q,
   if (!(S > 0.0) || !(K > 0.0) || !(sigma > 0.0) || !(T > 0.0) || steps < 1) {
     return {NAN, NAN, NAN, NAN, NAN, NAN};
   }
-  const bool is_call = (type == Type::Call);
-  auto f = [=](double s, double k, double rr, double qq, double vol,
-               double TT) {
-    return priceAmericanBinomialCore(is_call, s, k, rr, qq, vol, TT, steps);
-  };
-  return finiteDiffGreeks(f, S, K, r, q, sigma, T);
+  return americanFiniteDiffGreeks(type == Type::Call, S, K, r, q, sigma, T,
+                                  steps);
 }
 
 } // namespace bs
