@@ -35,7 +35,6 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
     -sALLOW_MEMORY_GROWTH=1
     --bind
     --no-entry
-    -o ${CMAKE_SOURCE_DIR}/docs/options.js
   )
 
   set_target_properties(options PROPERTIES
