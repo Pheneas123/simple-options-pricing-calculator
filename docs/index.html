@@ -9,15 +9,18 @@
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="#">Options Calculator</a>
-    <a class="math-link" href="math.pdf" target="_blank" rel="noopener noreferrer">PDF of the maths used <span>↗</span></a>
+    <div><h1>Options calculator</h1><p>European, binary &amp; American options</p></div>
+    <nav aria-label="Project resources">
+      <a href="https://github.com/Pheneas123/simple-options-pricing-calculator" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+      <a class="math-link" href="math.pdf" target="_blank" rel="noopener noreferrer">Read the maths <span>PDF ↗</span></a>
+    </nav>
   </header>
 
   <main>
     <section class="workspace">
       <aside class="panel inputs-panel">
         <div class="panel-heading">
-          <div><p class="section-number">01</p><h2>Market inputs</h2></div>
+          <div><h2>Market inputs</h2></div>
           <button id="reset_btn" class="text-button" type="button">Reset</button>
         </div>
 
@@ -56,12 +59,15 @@
 
       <section class="panel results-panel">
         <div class="panel-heading">
-          <div><p class="section-number">02</p><h2>Model results</h2></div>
-          <p class="units-note">Vega & rho per 1.00 · theta per year<br>Binary cash payout: $1</p>
+          <div><h2>Prices &amp; Greeks</h2></div>
+          <p class="live-note">Updates as you type</p>
         </div>
         <div class="table-wrap">
           <table class="outputs">
-            <thead><tr><th>Metric</th><th>European Call</th><th>European Put</th><th>Binary Call</th><th>Binary Put</th><th>American Call</th><th>American Put</th></tr></thead>
+            <thead>
+              <tr class="model-groups"><th rowspan="2" scope="col">Metric</th><th colspan="2" scope="colgroup">European</th><th colspan="2" scope="colgroup">Binary</th><th colspan="2" scope="colgroup">American</th></tr>
+              <tr><th scope="col">Call</th><th scope="col">Put</th><th scope="col">Call</th><th scope="col">Put</th><th scope="col">Call</th><th scope="col">Put</th></tr>
+            </thead>
             <tbody>
               <tr class="price-row"><th>Price</th><td id="call_price">—</td><td id="put_price">—</td><td id="binC_price">—</td><td id="binP_price">—</td><td id="amC_price">—</td><td id="amP_price">—</td></tr>
               <tr><th>Delta <span>Δ</span></th><td id="call_delta">—</td><td id="put_delta">—</td><td id="binC_delta">—</td><td id="binP_delta">—</td><td id="amC_delta">—</td><td id="amP_delta">—</td></tr>
@@ -72,15 +78,16 @@
             </tbody>
           </table>
         </div>
+        <p class="units-note">Vega &amp; rho per 1.00 · theta per year · binary payout $1</p>
         <p id="model_error" class="input-error" role="status"></p>
       </section>
     </section>
 
     <section class="visuals-section">
-      <div class="section-intro"><div><p class="section-number">03</p><h2>Explore the surface</h2></div><p>Move beyond a single point estimate. The views below update with your market inputs.</p></div>
+      <div class="section-intro"><div><h2>Charts</h2></div><p></p></div>
       <div class="visual-grid">
         <article class="panel visual-card">
-          <div class="visual-head"><div><h3>Value across spot</h3><p>Model value and expiry payoff</p></div><div class="select-group"><select id="curve_model" aria-label="Curve model"><option value="european">European</option><option value="american">American</option></select><select id="curve_type" aria-label="Option type"><option value="call">Call</option><option value="put">Put</option></select></div></div>
+          <div class="visual-head"><div><h3>Option value vs. spot</h3><p>Model value and expiry payoff</p></div><div class="select-group"><select id="curve_model" aria-label="Curve model"><option value="european">European</option><option value="american">American</option></select><select id="curve_type" aria-label="Option type"><option value="call">Call</option><option value="put">Put</option></select></div></div>
           <div class="chart-legend"><span><i class="line-value"></i>Model value</span><span><i class="line-payoff"></i>Expiry payoff</span><span><i class="line-spot"></i>Current spot</span></div>
           <div class="canvas-wrap"><canvas id="value_chart" aria-label="Option value across spot prices"></canvas></div>
         </article>
@@ -93,7 +100,7 @@
     </section>
   </main>
 
-  <footer><a href="https://github.com/Pheneas123/simple-options-pricing-calculator" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a></footer>
+  <footer><span>Options calculator / Pheneas Newman</span><a href="https://github.com/Pheneas123/simple-options-pricing-calculator" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a></footer>
   <script src="options.js"></script>
   <script src="app.js"></script>
 </body>

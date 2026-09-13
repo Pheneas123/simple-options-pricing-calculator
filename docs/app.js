@@ -130,9 +130,9 @@ function drawValueChart(state) {
   const x = spot => padding.left + (spot - minSpot) / (maxSpot - minSpot) * innerWidth;
   const y = value => padding.top + innerHeight - value / maxValue * innerHeight;
   ctx.clearRect(0, 0, width, height);
-  ctx.font = "9px DM Mono";
-  ctx.fillStyle = "#697384";
-  ctx.strokeStyle = "#252d3a";
+  ctx.font = "11px JetBrains Mono";
+  ctx.fillStyle = "#9ca4ad";
+  ctx.strokeStyle = "#2b3035";
   ctx.lineWidth = 1;
 
   for (let i = 0; i <= 4; i++) {
@@ -150,21 +150,21 @@ function drawValueChart(state) {
   ctx.setLineDash([4, 5]);
   ctx.strokeStyle = "#778193";
   ctx.beginPath(); values.forEach((point, i) => i ? ctx.lineTo(x(point.spot), y(point.payoff)) : ctx.moveTo(x(point.spot), y(point.payoff))); ctx.stroke();
-  ctx.strokeStyle = "#ffad66";
+  ctx.strokeStyle = "#c3ab83";
   ctx.beginPath(); ctx.moveTo(x(state.S), padding.top); ctx.lineTo(x(state.S), padding.top + innerHeight); ctx.stroke();
   ctx.restore();
 
   const gradient = ctx.createLinearGradient(0, padding.top, 0, padding.top + innerHeight);
-  gradient.addColorStop(0, "rgba(85,230,165,.2)"); gradient.addColorStop(1, "rgba(85,230,165,0)");
+  gradient.addColorStop(0, "rgba(145,187,165,.08)"); gradient.addColorStop(1, "rgba(145,187,165,0)");
   ctx.beginPath(); values.forEach((point, i) => i ? ctx.lineTo(x(point.spot), y(point.value)) : ctx.moveTo(x(point.spot), y(point.value)));
   ctx.lineTo(x(maxSpot), y(0)); ctx.lineTo(x(minSpot), y(0)); ctx.closePath(); ctx.fillStyle = gradient; ctx.fill();
   ctx.beginPath(); values.forEach((point, i) => i ? ctx.lineTo(x(point.spot), y(point.value)) : ctx.moveTo(x(point.spot), y(point.value)));
-  ctx.strokeStyle = "#55e6a5"; ctx.lineWidth = 2; ctx.stroke();
+  ctx.strokeStyle = "#91bba5"; ctx.lineWidth = 2; ctx.stroke();
 }
 
 function heatColor(value, min, max) {
   const t = max === min ? 0.5 : (value - min) / (max - min);
-  const colors = [[18, 27, 38], [20, 113, 106], [85, 230, 165]];
+  const colors = [[25, 33, 34], [58, 105, 94], [145, 187, 165]];
   const scaled = t * 2;
   const index = Math.min(1, Math.floor(scaled));
   const local = scaled - index;
@@ -203,7 +203,7 @@ function drawHeatmap(state) {
     ctx.fillStyle = heatColor(cell.value, min, max);
     ctx.fillRect(padding.left + cell.col * cellWidth, padding.top + cell.row * cellHeight, cellWidth + .5, cellHeight + .5);
   });
-  ctx.font = "9px DM Mono"; ctx.fillStyle = "#697384";
+  ctx.font = "11px JetBrains Mono"; ctx.fillStyle = "#9ca4ad";
   ctx.textAlign = "right"; ctx.fillText(`${(maxVol * 100).toFixed(0)}%`, padding.left - 7, padding.top + 8); ctx.fillText(`${(minVol * 100).toFixed(0)}%`, padding.left - 7, padding.top + rows * cellHeight);
   ctx.textAlign = "center"; ctx.fillText(minSpot.toFixed(0), padding.left, height - 10); ctx.fillText("Spot price", padding.left + cols * cellWidth / 2, height - 10); ctx.fillText(maxSpot.toFixed(0), padding.left + cols * cellWidth, height - 10);
   ctx.save(); ctx.translate(12, padding.top + rows * cellHeight / 2); ctx.rotate(-Math.PI / 2); ctx.fillText("Volatility", 0, 0); ctx.restore();
