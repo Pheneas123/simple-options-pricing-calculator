@@ -5,47 +5,14 @@
 
 namespace {
 
-struct FDSteps {
-  double hS, hsigma, hr, hT;
-  FDSteps(double S, double sigma, double r, double T)
-      : hS(std::max(1e-6, 1e-4 * S)), hsigma(std::max(1e-6, 1e-4 * sigma)),
-        hr(std::max(1e-6, 1e-4 * std::fabs(r) + 1e-6)),
-        hT(std::max(1e-6, 1e-4 * T + 1e-6)) {}
+struct TreeResult {
+  double price, delta, gamma;
 };
 
-template <class PriceFunc>
-bs::Result finiteDiffGreeks(PriceFunc price, double S, double K, double r,
-                            double q, double sigma, double T) {
-  FDSteps h(S, sigma, r, T);
-
-  const double P0 = price(S, K, r, q, sigma, T);
-  const double PSu = price(S + h.hS, K, r, q, sigma, T);
-  const double PSd = price(S - h.hS, K, r, q, sigma, T);
-  const double Pvup = price(S, K, r, q, sigma + h.hsigma, T);
-  const double Pvdo = price(S, K, r, q, sigma - h.hsigma, T);
-  const double Prup = price(S, K, r + h.hr, q, sigma, T);
-  const double Prdo = price(S, K, r - h.hr, q, sigma, T);
-
-  const double Ptup = price(S, K, r, q, sigma, T + h.hT);
-  const double Tm = (T - h.hT > 1e-8) ? (T - h.hT) : std::max(1e-8, 0.5 * T);
-  const double Ptdo = price(S, K, r, q, sigma, Tm);
-
-  bs::Result R;
-  R.price = P0;
-  R.delta = (PSu - PSd) / (2.0 * h.hS);
-  R.gamma = (PSu - 2.0 * P0 + PSd) / (h.hS * h.hS);
-  R.vega = (Pvup - Pvdo) / (2.0 * h.hsigma);
-  R.rho = (Prup - Prdo) / (2.0 * h.hr);
-  R.theta = -(Ptup - Ptdo) / ((T + h.hT) - Tm);
-  return R;
-}
-
 // American option via CRR binomial with early exercise
-static inline double priceAmericanBinomialCore(bool is_call, double S, double K,
-                                               double r, double q, double sigma,
-                                               double T, int steps) {
-  if (steps < 1)
-    steps = 1;
+static TreeResult priceAmericanBinomialCore(bool is_call, double S, double K,
+                                            double r, double q, double sigma,
+                                            double T, int steps) {
 
   const double dt = T / steps;
   const double u = std::exp(sigma * std::sqrt(dt));
@@ -54,7 +21,7 @@ static inline double priceAmericanBinomialCore(bool is_call, double S, double K,
   const double a = std::exp((r - q) * dt);
   const double p = (a - d) / (u - d);
   if (!std::isfinite(p) || p < 0.0 || p > 1.0)
-    return NAN;
+    return {NAN, NAN, NAN};
 
   // stock prices at maturity
   std::vector<double> ST(steps + 1);
@@ -68,6 +35,20 @@ static inline double priceAmericanBinomialCore(bool is_call, double S, double K,
     V[i] = is_call ? std::max(ST[i] - K, 0.0) : std::max(K - ST[i], 0.0);
   }
 
+  double delta = NAN, gamma = NAN;
+  // Read spatial Greeks from the first two tree levels. Small spot bumps
+  // differentiate the piecewise-linear lattice price and give unstable gamma.
+  auto captureGreeks = [&](int level) {
+    if (level == 2) {
+      const double deltaUp = (V[2] - V[1]) / (ST[2] - ST[1]);
+      const double deltaDown = (V[1] - V[0]) / (ST[1] - ST[0]);
+      gamma = (deltaUp - deltaDown) / (0.5 * (ST[2] - ST[0]));
+    } else if (level == 1) {
+      delta = (V[1] - V[0]) / (ST[1] - ST[0]);
+    }
+  };
+  captureGreeks(steps);
+
   // backward induction with early exercise
   for (int step = steps - 1; step >= 0; --step) {
     for (int i = 0; i <= step; ++i) {
@@ -76,39 +57,41 @@ static inline double priceAmericanBinomialCore(bool is_call, double S, double K,
       const double exer =
           is_call ? std::max(ST[i] - K, 0.0) : std::max(K - ST[i], 0.0);
       V[i] = std::max(cont, exer);
+      if (step == 0 && exer > 0.0 && exer >= cont) {
+        delta = is_call ? 1.0 : -1.0;
+        gamma = 0.0;
+      }
     }
+    captureGreeks(step);
   }
-  return V[0];
+  return {V[0], delta, gamma};
 }
 
-static inline double priceAmericanBinomial(bool is_call, double S, double K,
-                                           double r, double q, double sigma,
-                                           double T, int steps) {
-  const double a = priceAmericanBinomialCore(is_call, S, K, r, q, sigma, T,
-                                              steps);
-  const double b = priceAmericanBinomialCore(is_call, S, K, r, q, sigma, T,
-                                              steps + 1);
-  if (!std::isfinite(a) || !std::isfinite(b))
-    return NAN;
+static TreeResult priceAmericanBinomial(bool is_call, double S, double K,
+                                        double r, double q, double sigma,
+                                        double T, int steps) {
+  const auto a =
+      priceAmericanBinomialCore(is_call, S, K, r, q, sigma, T, steps);
+  const auto b =
+      priceAmericanBinomialCore(is_call, S, K, r, q, sigma, T, steps + 1);
+  if (!std::isfinite(a.price) || !std::isfinite(b.price))
+    return {NAN, NAN, NAN};
   const double intrinsic =
       is_call ? std::max(S - K, 0.0) : std::max(K - S, 0.0);
-  return std::max(intrinsic, 0.5 * (a + b));
+  return {std::max(intrinsic, 0.5 * (a.price + b.price)),
+          0.5 * (a.delta + b.delta), 0.5 * (a.gamma + b.gamma)};
 }
 
-static bs::Result americanFiniteDiffGreeks(bool is_call, double S, double K,
-                                           double r, double q, double sigma,
-                                           double T, int steps) {
+static bs::Result americanGreeks(bool is_call, double S, double K, double r,
+                                 double q, double sigma, double T, int steps) {
   auto price = [=](double s, double rr, double vol, double time) {
-    return priceAmericanBinomial(is_call, s, K, rr, q, vol, time, steps);
+    return priceAmericanBinomial(is_call, s, K, rr, q, vol, time, steps).price;
   };
 
-  const double hS = std::max(1e-4, 0.005 * S);
   const double hVol = std::min(0.001, 0.5 * sigma);
   const double hR = 0.0001;
   const double hT = std::min(1.0 / 365.0, 0.5 * T);
-  const double p0 = price(S, r, sigma, T);
-  const double pSu = price(S + hS, r, sigma, T);
-  const double pSd = price(S - hS, r, sigma, T);
+  const auto base = priceAmericanBinomial(is_call, S, K, r, q, sigma, T, steps);
   const double pVu = price(S, r, sigma + hVol, T);
   const double pVd = price(S, r, sigma - hVol, T);
   const double pRu = price(S, r + hR, sigma, T);
@@ -116,9 +99,9 @@ static bs::Result americanFiniteDiffGreeks(bool is_call, double S, double K,
   const double pTu = price(S, r, sigma, T + hT);
   const double pTd = price(S, r, sigma, T - hT);
 
-  return {p0,
-          (pSu - pSd) / (2.0 * hS),
-          (pSu - 2.0 * p0 + pSd) / (hS * hS),
+  return {base.price,
+          base.delta,
+          base.gamma,
           (pVu - pVd) / (2.0 * hVol),
           -(pTu - pTd) / (2.0 * hT),
           (pRu - pRd) / (2.0 * hR)};
@@ -241,11 +224,10 @@ Result binaryCashOrNothing(Type type, double S, double K, double r, double q,
 // American option
 Result americanOption(Type type, double S, double K, double r, double q,
                       double sigma, double T, int steps) {
-  if (!(S > 0.0) || !(K > 0.0) || !(sigma > 0.0) || !(T > 0.0) || steps < 1) {
+  if (!(S > 0.0) || !(K > 0.0) || !(sigma > 0.0) || !(T > 0.0) || steps < 2) {
     return {NAN, NAN, NAN, NAN, NAN, NAN};
   }
-  return americanFiniteDiffGreeks(type == Type::Call, S, K, r, q, sigma, T,
-                                  steps);
+  return americanGreeks(type == Type::Call, S, K, r, q, sigma, T, steps);
 }
 
 } // namespace bs

@@ -30,6 +30,12 @@ jobs:
       - name: Run tests
         run: ctest --test-dir build --output-on-failure
 
+      - name: Check bundled browser engine and frontend
+        run: |
+          ./build/wasm_reference > build/reference.jsonl
+          node tests/wasm_tests.cjs build/reference.jsonl
+          node tests/frontend_tests.cjs
+
   build-wasm:
     runs-on: ubuntu-latest
     steps:

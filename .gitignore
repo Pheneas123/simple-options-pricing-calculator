@@ -31,3 +31,10 @@ Thumbs.db
 *.synctex.gz
 .latexindent.yaml
 *.bak*
+
+# Local AI tooling and agent instructions
+.agents/
+.codex/
+.claude/
+AGENTS.md
+CLAUDE.md

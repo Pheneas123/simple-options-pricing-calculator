@@ -37,6 +37,11 @@
 \date{\today}
 \maketitle
 
+Throughout, $T$ is time remaining in years. Calendar-time theta is
+$\Theta=-\partial V/\partial T$, with $S$, $K$, $r$, $q$, and $\sigma$ held fixed.
+Theta is reported per year; vega and rho are derivatives per unit change
+in decimal volatility and interest rate (divide by 100 for a percentage point).
+
 \section{European Call}
 
 \[
@@ -117,18 +122,18 @@
 
 \subsection{Theta}
 \[
-\boxed{\Theta = \frac{\partial C}{\partial T}= -e^{-qT} \frac{S\phi(d_1)\sigma}{2\sqrt{T}} - rKe^{-rT}\Phi(d_2) + qSe^{-qT}\Phi(d_1)} \\
+\boxed{\Theta = -\frac{\partial C}{\partial T}= -e^{-qT} \frac{S\phi(d_1)\sigma}{2\sqrt{T}} - rKe^{-rT}\Phi(d_2) + qSe^{-qT}\Phi(d_1)} \\
 \]
 
 \[
   \begin{aligned}
-    \Theta & = \frac{\partial C}{\partial T} = S\left(-qe^{-qT}\Phi(d_1) + e^{-qT}\phi(d_1)\frac{\partial d_1}{\partial T}\right) - K\left(-re^{-rT}\Phi(d_2) + e^{-rT}\phi(d_2)\frac{\partial d_2}{\partial T}\right) \\[6pt]
+    \frac{\partial C}{\partial T} & = S\left(-qe^{-qT}\Phi(d_1) + e^{-qT}\phi(d_1)\frac{\partial d_1}{\partial T}\right) - K\left(-re^{-rT}\Phi(d_2) + e^{-rT}\phi(d_2)\frac{\partial d_2}{\partial T}\right) \\[6pt]
     & \textcolor{purple1}{\frac{\partial d_1}{\partial T} = \frac{(\sigma^2 + 2r - 2q)T - 2\ln(\tfrac{S}{K})}{4\sigma T^{\frac{3}{2}}} \coloneqq A} \\[6pt]
     & \textcolor{blue1}{\frac{\partial d_2}{\partial T} = \frac{(\sigma^2 + 2r - 2q)T - 2\ln(\tfrac{S}{K})}{4\sigma T^{\frac{3}{2}}} - \frac{\sigma}{2\sqrt{T}} \coloneqq A - \frac{\sigma}{2\sqrt{T}}} \\[6pt]
     & = Se^{-qT}(-q\Phi(d_1) + \phi(d_1)A) - Ke^{-rT}(-r\Phi(d_2) + \phi(d_2)(A - \tfrac{\sigma}{2\sqrt{T}})) \\[6pt]
     & = -qSe^{-qT}\Phi(d_1) + rKe^{-rT}\Phi(d_2) + Ke^{-rT}\phi(d_2)\tfrac{\sigma}{2\sqrt{T}} + \underbrace{A(Se^{-qT}\phi(d_1) - Ke^{-rT}\phi(d_2))}_{= 0} \\[6pt]
     & = Ke^{-rT}\phi(d_2)\tfrac{\sigma}{2\sqrt{T}} + rKe^{-rT}\Phi(d_2) - qSe^{-qT}\Phi(d_1) \\[8pt]
-    & \text{\parbox{0.85\linewidth}{Using the Black-Scholes identity $S e^{-qT}\phi(d_1) = K e^{-rT}\phi(d_2)$, and expressing $\Theta$ as the negative:}} \\[4pt]
+    & \text{\parbox{0.85\linewidth}{Using the Black-Scholes identity $S e^{-qT}\phi(d_1) = K e^{-rT}\phi(d_2)$, then applying $\Theta=-\partial C/\partial T$:}} \\[4pt]
     \Theta & = -e^{-qT} \frac{S\phi(d_1)\sigma}{2\sqrt{T}} - rKe^{-rT}\Phi(d_2) + qSe^{-qT}\Phi(d_1)
   \end{aligned}
 \]
@@ -219,23 +224,23 @@ Same as European Call derivation.
 \subsection{Theta}
 
 \[
-  \boxed{\Theta = \frac{\partial P}{\partial T} = -e^{-qT}\frac{S\phi(d_1)\sigma}{2\sqrt{T}} + rKe^{-rT}\Phi(-d_2) - qSe^{-qT}\Phi(-d_1)}\\
+  \boxed{\Theta = -\frac{\partial P}{\partial T} = -e^{-qT}\frac{S\phi(d_1)\sigma}{2\sqrt{T}} + rKe^{-rT}\Phi(-d_2) - qSe^{-qT}\Phi(-d_1)}\\
 \]
 
 
+Let $A=\partial d_1/\partial T$, as in the call derivation, so that
+$\partial d_2/\partial T=A-\sigma/(2\sqrt{T})$. Differentiating gives
 \[
 \begin{aligned}
-  \Theta & = \frac{\partial P}{\partial T} = K\left(-r e^{-rT}\Phi(-d_2) + e^{-rT}\phi(d_2)\left(-\frac{\partial d_2}{\partial T}\right)\right) - S\left(-q e^{-qT}\Phi(-d_1) + e^{-qT}\phi(d_1)\left(-\frac{\partial d_1}{\partial T}\right)\right) \\[4pt]
-  & = K e^{-rT}\left(-r\Phi(-d_2) - \phi(d_2)\frac{\partial d_2}{\partial T}\right) - S e^{-qT}\left(-q\Phi(-d_1) - \phi(d_1)\frac{\partial d_1}{\partial T}\right) \\[6pt]
-  & \textcolor{purple1}{\frac{\partial d_1}{\partial T} = \frac{\left(\sigma^2 + 2r - 2q\right)T - 2\ln\left(\frac{S}{K}\right)}{4\sigma T^{3/2}} = A} \\[6pt]
-  & \textcolor{blue1}{\frac{\partial d_2}{\partial T} = \frac{\left(\sigma^2 + 2r - 2q\right)T - 2\ln\left(\frac{S}{K}\right)}{4\sigma T^{3/2}} - \frac{\sigma}{2\sqrt{T}} = A - \frac{\sigma}{2\sqrt{T}}} \\[6pt]
-  & = S e^{-qT}\left(q\Phi(-d_1) + \phi(d_1)A\right) - K e^{-rT}\left(r\Phi(-d_2) + \phi(d_2)\left(A - \frac{\sigma}{2\sqrt{T}}\right)\right) \\[6pt]
-  & = qS e^{-qT}\Phi(-d_1) - rK e^{-rT}\Phi(-d_2) + K e^{-rT}\phi(d_2)\frac{\sigma}{2\sqrt{T}} + A\left(S e^{-qT}\phi(d_1) - K e^{-rT}\phi(d_2)\right) \\[6pt]
-  & = qS e^{-qT}\Phi(-d_1) - K e^{-rT}\left(r\Phi(-d_2) + \phi(d_2)\frac{\sigma}{2\sqrt{T}}\right) - S e^{-qT}\phi(d_1)\frac{\sigma}{2\sqrt{T}} \\[6pt]
-  & = -S e^{-qT}\phi(d_1)\frac{\sigma}{2\sqrt{T}} + rK e^{-rT}\Phi(-d_2) - qS e^{-qT}\Phi(-d_1)
+  \frac{\partial P}{\partial T}
+    & = qSe^{-qT}\Phi(-d_1)-rKe^{-rT}\Phi(-d_2) \\
+    & \quad + A\underbrace{\left(Se^{-qT}\phi(d_1)-Ke^{-rT}\phi(d_2)\right)}_{=0}
+      + Ke^{-rT}\phi(d_2)\frac{\sigma}{2\sqrt{T}} \\[6pt]
+    & = qSe^{-qT}\Phi(-d_1)-rKe^{-rT}\Phi(-d_2)
+      + Se^{-qT}\phi(d_1)\frac{\sigma}{2\sqrt{T}}.
 \end{aligned}
 \]
-
+Negating this derivative gives the boxed calendar-time theta above.
 
 \subsection{Rho}
 
@@ -320,29 +325,28 @@ Same as European Call derivation.
       & \textcolor{purple1}{\frac{\partial d_1}{\partial \sigma} = -\frac{\ln\!\left(\tfrac{S}{K}\right) + T(r - q)}{\sigma^2 \sqrt{T}} + \tfrac{1}{2}\sqrt{T}} \\[6pt]
       & = Q e^{-rT} \phi(d_2) \left( -\frac{\ln\!\left(\tfrac{S}{K}\right) + T(r - q)}{\sigma^2 \sqrt{T}} - \tfrac{1}{2}\sqrt{T} \right) \\[6pt]
       & = -Q e^{-rT} \phi(d_2) \left( \frac{\ln\!\left(\tfrac{S}{K}\right) + T(r - q)}{\sigma^2 \sqrt{T}} + \tfrac{1}{2}\sqrt{T} \right) \\[6pt]
-      & = -Q e^{-rT} \phi(d_2)\underbrace{\left(\frac{\ln\!\left(\tfrac{S}{K}\right) + T(r - q) + \tfrac{1}{2}\sigma^2 T}{\sigma \sqrt{T}}\right)}_{=\,\tfrac{d_1}{\sigma}} \\[6pt]
+      & = -Q e^{-rT} \phi(d_2)\underbrace{\left(\frac{\ln\!\left(\tfrac{S}{K}\right) + T(r - q) + \tfrac{1}{2}\sigma^2 T}{\sigma^2 \sqrt{T}}\right)}_{=\,\tfrac{d_1}{\sigma}} \\[6pt]
       & = -Q e^{-rT} \phi(d_2) \frac{d_1}{\sigma}
   \end{aligned}
 \]
 
 \subsection{Theta}
+Define the time-to-maturity derivative of $d_2$ as
 \[
-  \boxed{\Theta = \frac{\partial C_{\mathrm{bin}}}{\partial T} = Qe^{-rT}\!\left[-r\Phi(d_2) - \frac{\phi(d_2)}{2T}\left(\frac{\ln(\tfrac{S}{K}) + (r - q - \tfrac{1}{2}\sigma^2)T}{\sigma\sqrt{T}}\right)\right]}
+  D_T = \frac{\partial d_2}{\partial T}
+      = \frac{r-q-\tfrac12\sigma^2}{\sigma\sqrt{T}} - \frac{d_2}{2T}
+      = \frac{(r-q-\tfrac12\sigma^2)T-\ln(S/K)}{2\sigma T^{3/2}}.
 \]
-
+Then
 \[
-\begin{aligned}
-   \Theta & = \frac{\partial C}{\partial T} = Q\left(-r e^{-rT}\Phi(d_2) + \phi(d_2)\frac{\partial d_2}{\partial T} e^{-rT}\right) \\[4pt]
-          & = Q e^{-rT}\left(-r\Phi(d_2) + \phi(d_2)\frac{\partial d_2}{\partial T}\right) \\[4pt]
-          & \textcolor{purple1}{\frac{\partial d_2}{\partial T} = \frac{\partial}{\partial T}\!\left(\frac{\ln\!\left(\tfrac{S}{K}\right) + (r - q + \tfrac{1}{2}\sigma^2)T}{\sigma\sqrt{T}} - \sigma \sqrt{T}\right)} \\[4pt]
-          & \textcolor{purple1}{= -\frac{(\sigma^2 - 2r + 2q)T + 2\ln\!\left(\tfrac{S}{K}\right)}{4\sigma T^{3/2}}} \\[4pt]
-          & = Q e^{-rT}\left(-r\Phi(d_2) + \phi(d_2)\left(-\frac{2\ln\!\left(\tfrac{S}{K}\right) + (-2r + 2q + \sigma^2)T}{4\sigma T^{3/2}}\right)\right) \\[4pt]
-          & = Q e^{-rT}\left(-r\Phi(d_2) + \frac{\phi(d_2)}{2T}\left(-\frac{\ln\!\left(\tfrac{S}{K}\right) + (r - q - \tfrac{1}{2}\sigma^2)T}{\sigma\sqrt{T}}\right)\right) \\[4pt]
-          & = Q e^{-rT}\left(-r\Phi(d_2) - \frac{\phi(d_2)d_2}{2T}\right)
-\end{aligned}
+  \frac{\partial C_{\mathrm{bin}}}{\partial T}
+    = Qe^{-rT}\left[-r\Phi(d_2)+\phi(d_2)D_T\right].
 \]
-
-
+Applying the calendar-time sign convention gives
+\[
+  \boxed{\Theta = -\frac{\partial C_{\mathrm{bin}}}{\partial T}
+    = Qe^{-rT}\left[r\Phi(d_2)-\phi(d_2)D_T\right]}.
+\]
 
 \subsection{Rho}
 \[
@@ -403,11 +407,18 @@ Same derivation as call
 Same derivation as call
 
 \subsection{Theta}
+Using $D_T=\partial d_2/\partial T$ as defined for the binary call,
 \[
-  \boxed{\Theta = \frac{\partial P_{\mathrm{bin}}}{\partial T} = Qe^{-rT}\!\left[-r\Phi(-d_2) + \frac{\phi(d_2)}{2T}\left(\frac{\ln(\tfrac{S}{K}) + (r - q - \tfrac{1}{2}\sigma^2)T}{\sigma\sqrt{T}}\right)\right]}
+  \frac{\partial P_{\mathrm{bin}}}{\partial T}
+    = Qe^{-rT}\left[-r\Phi(-d_2)-\phi(d_2)D_T\right].
 \]
-
-Nearly identical to call, just $\Phi(-d_2)$ instead of $\Phi(d_2)$ and adding additional term
+Therefore
+\[
+  \boxed{\Theta = -\frac{\partial P_{\mathrm{bin}}}{\partial T}
+    = Qe^{-rT}\left[r\Phi(-d_2)+\phi(d_2)D_T\right]}.
+\]
+As a check, the binary call and put sum to $Qe^{-rT}$, so their
+calendar-time thetas sum to $rQe^{-rT}$.
 
 \subsection{Rho}
 \[

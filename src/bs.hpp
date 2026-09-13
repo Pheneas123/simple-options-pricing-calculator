@@ -23,7 +23,8 @@ double normCdf(double x);
 Result binaryCashOrNothing(Type type, double S, double K, double r, double q,
                            double sigma, double T, double payout = 1.0);
 
-// American options
+// American options: at least two steps; tree delta/gamma, bumped
+// vega/theta/rho.
 Result americanOption(Type type, double S, double K, double r, double q,
                       double sigma, double T, int steps = 200);
 

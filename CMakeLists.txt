@@ -14,6 +14,8 @@ if(BUILD_TESTING AND NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
   add_executable(core_tests tests/bs_tests.cpp)
   target_link_libraries(core_tests PRIVATE core)
   add_test(NAME core_tests COMMAND core_tests)
+  add_executable(wasm_reference tests/wasm_reference.cpp)
+  target_link_libraries(wasm_reference PRIVATE core)
 endif()
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Emscripten")

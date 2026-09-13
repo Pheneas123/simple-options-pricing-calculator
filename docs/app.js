@@ -1,6 +1,8 @@
 let Module = null;
 let timer;
 
+const americanSteps = 300;
+
 const $ = id => document.getElementById(id);
 const outputPrefixes = ["call", "put", "binC", "binP", "amC", "amP"];
 const defaults = { S: 100, K: 100, r: 0.05, q: 0, sigma: 0.2, T: 1 };
@@ -46,14 +48,24 @@ function syncPair(numId, rangeId, min, max, step) {
 }
 
 function readState() {
-  return {
-    S: Number($("S_num").value),
-    K: Number($("K_num").value),
-    r: Number($("r_num").value),
-    q: Number($("q_num").value),
-    sigma: Number($("sigma_num").value),
-    T: Number($("T_num").value)
-  };
+  return Object.fromEntries(Object.keys(defaults).map(key => {
+    const value = $(`${key}_num`).value.trim();
+    return [key, value === "" ? NaN : Number(value)];
+  }));
+}
+
+function clearChart(id, message) {
+  const { context, width, height } = resizeCanvas($(id));
+  context.clearRect(0, 0, width, height);
+  context.font = "12px sans-serif";
+  context.fillStyle = "#8992a3";
+  context.textAlign = "center";
+  context.fillText(message, width / 2, height / 2, width - 24);
+}
+
+function clearCharts(message) {
+  clearChart("value_chart", message);
+  clearChart("price_heatmap", message);
 }
 
 function validate(state) {
@@ -104,9 +116,14 @@ function drawValueChart(state) {
   for (let i = 0; i <= points; i++) {
     const spot = minSpot + (maxSpot - minSpot) * i / points;
     const result = model === "american"
-      ? Module.american_option(type, spot, state.K, state.r, state.q, state.sigma, state.T, 100)
+      ? Module.american_option(type, spot, state.K, state.r, state.q, state.sigma, state.T, americanSteps)
       : Module.black_scholes(type, spot, state.K, state.r, state.q, state.sigma, state.T);
     values.push({ spot, value: result.price, payoff: isCall ? Math.max(spot - state.K, 0) : Math.max(state.K - spot, 0) });
+  }
+
+  if (values.some(point => !Number.isFinite(point.value))) {
+    clearChart("value_chart", "Model unavailable for these inputs; see results above.");
+    return;
   }
 
   const maxValue = Math.max(1, ...values.flatMap(point => [point.value, point.payoff])) * 1.12;
@@ -176,6 +193,10 @@ function drawHeatmap(state) {
     }
   }
   const values = cells.map(cell => cell.value);
+  if (values.some(value => !Number.isFinite(value))) {
+    clearChart("price_heatmap", "Price sensitivity unavailable for these inputs.");
+    return;
+  }
   const min = Math.min(...values), max = Math.max(...values);
   ctx.clearRect(0, 0, width, height);
   cells.forEach(cell => {
@@ -199,20 +220,37 @@ function compute() {
     const state = readState();
     const error = validate(state);
     $("input_error").textContent = error;
-    if (error) { setOutputs("—"); return; }
+    $("model_error").textContent = "";
+    if (error) {
+      setOutputs("—");
+      clearCharts("Enter valid market inputs to view the chart.");
+      return;
+    }
 
     try {
-      render("call", Module.black_scholes(Module.Type.Call, state.S, state.K, state.r, state.q, state.sigma, state.T));
-      render("put", Module.black_scholes(Module.Type.Put, state.S, state.K, state.r, state.q, state.sigma, state.T));
-      render("binC", Module.binary_cash_or_nothing(Module.Type.Call, state.S, state.K, state.r, state.q, state.sigma, state.T, 1));
-      render("binP", Module.binary_cash_or_nothing(Module.Type.Put, state.S, state.K, state.r, state.q, state.sigma, state.T, 1));
-      render("amC", Module.american_option(Module.Type.Call, state.S, state.K, state.r, state.q, state.sigma, state.T, 300));
-      render("amP", Module.american_option(Module.Type.Put, state.S, state.K, state.r, state.q, state.sigma, state.T, 300));
+      const results = {
+        call: Module.black_scholes(Module.Type.Call, state.S, state.K, state.r, state.q, state.sigma, state.T),
+        put: Module.black_scholes(Module.Type.Put, state.S, state.K, state.r, state.q, state.sigma, state.T),
+        binC: Module.binary_cash_or_nothing(Module.Type.Call, state.S, state.K, state.r, state.q, state.sigma, state.T, 1),
+        binP: Module.binary_cash_or_nothing(Module.Type.Put, state.S, state.K, state.r, state.q, state.sigma, state.T, 1),
+        amC: Module.american_option(Module.Type.Call, state.S, state.K, state.r, state.q, state.sigma, state.T, americanSteps),
+        amP: Module.american_option(Module.Type.Put, state.S, state.K, state.r, state.q, state.sigma, state.T, americanSteps)
+      };
+      Object.entries(results).forEach(([prefix, result]) => render(prefix, result));
+      const unavailable = result => Object.values(result).some(value => !Number.isFinite(value));
+      if (unavailable(results.amC) || unavailable(results.amP)) {
+        $("model_error").textContent = "Some American results are unavailable: the binomial model or its Greek calculations are outside their numerical limits. Low volatility, long expiry or a large rate–dividend gap can make the tree probability invalid. Try increasing volatility or shortening expiry.";
+      }
+      if ([results.call, results.put, results.binC, results.binP].some(unavailable)) {
+        $("model_error").textContent += " Some European or binary results exceed numerical limits.";
+      }
       drawValueChart(state);
       drawHeatmap(state);
     } catch (error) {
       console.error(error);
       setOutputs("Error");
+      $("model_error").textContent = "Calculation failed for these inputs.";
+      clearCharts("Calculation unavailable.");
     }
   }, 70);
 }
@@ -242,6 +280,8 @@ async function init() {
   } catch (error) {
     console.error(error);
     setOutputs("Unavailable");
+    $("model_error").textContent = "The pricing engine could not load. Reload the page to try again.";
+    clearCharts("Pricing engine unavailable.");
   }
 }
 
